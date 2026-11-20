@@ -1,6 +1,8 @@
+using eShopEnhanced.Data;
+using eShopEnhanced.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace eShopEnhanced.Models
+namespace eShopEnhanced.Repositories
 {
     public class SubCategoryRepository : ISubCategoryRepository
     {

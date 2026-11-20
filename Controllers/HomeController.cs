@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eShopEnhanced.Models;
+using eShopEnhanced.Repositories;
 using eShopEnhanced.ViewModels;
 
 namespace eShopEnhanced.Controllers;

@@ -1,4 +1,5 @@
 using eShopEnhanced.Models;
+using eShopEnhanced.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eShopEnhanced.ViewComponents

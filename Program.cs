@@ -1,4 +1,5 @@
-using eShopEnhanced.Models;
+using eShopEnhanced.Data;
+using eShopEnhanced.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

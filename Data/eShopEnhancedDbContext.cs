@@ -1,6 +1,7 @@
+using eShopEnhanced.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace eShopEnhanced.Models
+namespace eShopEnhanced.Data
 {
     public class eShopEnhancedDbContext : DbContext
     {

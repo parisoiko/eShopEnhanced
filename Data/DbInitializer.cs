@@ -1,4 +1,5 @@
-namespace eShopEnhanced.Models
+using eShopEnhanced.Models;
+namespace eShopEnhanced.Data
 {
     public static class DbInitializer
     {
