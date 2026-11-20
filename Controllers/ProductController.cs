@@ -1,3 +1,4 @@
+using eShopEnhanced.Helpers;
 using eShopEnhanced.Models;
 using eShopEnhanced.Repositories;
 using eShopEnhanced.ViewModels;
@@ -5,29 +6,32 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShopEnhanced.Controllers
 {
-    public class ProductController: Controller
+    // Attribute routing: every URL of this controller starts with /products
+    [Route("products")]
+    public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
-        
+
         public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
         }
 
-        // /Product/List                     -> every product
-        // /Product/List?category=Cupcakes   -> only that category's products
-        public IActionResult List(string? category)
+        // /products            -> every product
+        // /products/cupcakes   -> only that category's products
+        [HttpGet("")]
+        [HttpGet("{category}")]
+        public async Task<IActionResult> List(string? category)
         {
             if (string.IsNullOrEmpty(category))
             {
-                return View(new ProductListViewModel(_productRepository.AllProducts, "All products"));
+                return View(new ProductListViewModel(await _productRepository.GetAllProductsAsync(), "All products"));
             }
 
-            // Unknown category in the URL (e.g. ?category=Pizza) -> 404 page
-            Category? selectedCategory = _categoryRepository.AllCategories
-                .FirstOrDefault(c => c.CategoryName == category);
+            // Unknown category in the URL (e.g. /products/pizza) -> 404 page
+            Category? selectedCategory = await _categoryRepository.GetCategoryByNameAsync(category);
 
             if (selectedCategory == null)
             {
@@ -35,29 +39,35 @@ namespace eShopEnhanced.Controllers
             }
 
             ProductListViewModel productListViewModel = new ProductListViewModel(
-                _productRepository.ProductsByCategory(selectedCategory.CategoryName),
+                await _productRepository.GetProductsByCategoryAsync(selectedCategory.CategoryName),
                 selectedCategory.CategoryName);
 
             return View(productListViewModel);
         }
 
-        // /Product/Details/3 -> the "3" comes from the {id?} part of the default route
-        public IActionResult Details(int id)
+        // /products/7/black-forest-cake
+        // {id:int} only matches numbers, so /products/7 is a product and /products/cakes is a category.
+        // The slug is only there to make the URL readable; the id alone finds the product.
+        [HttpGet("{id:int}/{slug?}")]
+        public async Task<IActionResult> Details(int id, string? slug)
         {
-            Product? product = _productRepository.GetProductById(id);
+            Product? product = await _productRepository.GetProductByIdAsync(id);
 
-            // No product with that id (e.g. /Product/Details/999) -> 404 page
+            // No product with that id (e.g. /products/999) -> 404 page
             if (product == null)
             {
                 return NotFound();
             }
 
-            return View(product);
-        }
+            // Missing or wrong slug (/products/7 or /products/7/old-name) -> permanent redirect
+            // to the one correct URL, so every product has exactly one address
+            string correctSlug = Slug.From(product.Name);
+            if (slug != correctSlug)
+            {
+                return RedirectToActionPermanent(nameof(Details), new { id, slug = correctSlug });
+            }
 
-        public IActionResult ListCategories()
-        {
-            return View(_categoryRepository.AllCategories);
+            return View(product);
         }
     }
 }

@@ -13,9 +13,22 @@ namespace eShopEnhanced.Repositories
             _eShopEnhancedDbContext = eShopEnhancedDbContext;
         }
 
-        public IEnumerable<Category> AllCategories =>
-            _eShopEnhancedDbContext.Categories
+        public async Task<List<Category>> GetAllCategoriesAsync()
+        {
+            return await _eShopEnhancedDbContext.Categories
+                .AsNoTracking()
                 .Include(c => c.SubCategories)
-                .OrderBy(c => c.CategoryName);
+                .OrderBy(c => c.CategoryName)
+                .ToListAsync();
+        }
+
+        public async Task<Category?> GetCategoryByNameAsync(string categoryName)
+        {
+            // This comparison runs in SQL Server, which ignores upper/lower case by default,
+            // and only the one matching row is loaded.
+            return await _eShopEnhancedDbContext.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.CategoryName == categoryName);
+        }
     }
 }

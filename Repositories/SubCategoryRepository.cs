@@ -13,9 +13,13 @@ namespace eShopEnhanced.Repositories
             _eShopEnhancedDbContext = eShopEnhancedDbContext;
         }
 
-        public IEnumerable<SubCategory> AllSubCategories =>
-            _eShopEnhancedDbContext.SubCategories
+        public async Task<List<SubCategory>> GetAllSubCategoriesAsync()
+        {
+            return await _eShopEnhancedDbContext.SubCategories
+                .AsNoTracking()
                 .Include(s => s.Category)
-                .OrderBy(s => s.SubCategoryName);
+                .OrderBy(s => s.SubCategoryName)
+                .ToListAsync();
+        }
     }
 }

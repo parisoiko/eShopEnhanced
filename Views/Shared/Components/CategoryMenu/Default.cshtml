@@ -13,7 +13,7 @@
         {
             <li>
                 <a class="dropdown-item" asp-controller="Product" asp-action="List"
-                   asp-route-category="@category.CategoryName">@category.CategoryName</a>
+                   asp-route-category="@Slug.From(category.CategoryName)">@category.CategoryName</a>
             </li>
         }
     </ul>

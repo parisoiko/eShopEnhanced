@@ -13,38 +13,44 @@ namespace eShopEnhanced.Repositories
             _eShopEnhancedDbContext = eShopEnhancedDbContext;
         }
 
-        public IEnumerable<Product> AllProducts
+        // The starting point for every product query:
+        // - AsNoTracking: we only read, so EF doesn't need to watch the objects for changes
+        // - Include/ThenInclude: load the subcategory and its category in the same SQL query
+        private IQueryable<Product> ProductsWithCategories =>
+            _eShopEnhancedDbContext.Products
+                .AsNoTracking()
+                .Include(p => p.SubCategory)
+                .ThenInclude(s => s.Category);
+
+        public async Task<List<Product>> GetAllProductsAsync()
         {
-            get
-            {
-                return _eShopEnhancedDbContext.Products
-                    .Include(p => p.SubCategory).ThenInclude(s => s.Category)
-                    .OrderBy(p => p.SubCategory.Category.CategoryName)
-                    .ThenBy(p => p.Name);
-            }
+            return await ProductsWithCategories
+                .OrderBy(p => p.SubCategory.Category.CategoryName)
+                .ThenBy(p => p.Name)
+                .ToListAsync();
         }
 
-        public IEnumerable<Product> PicksOfTheWeek
+        public async Task<List<Product>> GetPicksOfTheWeekAsync()
         {
-            get
-            {
-                return _eShopEnhancedDbContext.Products.Include(p => p.SubCategory).ThenInclude(s => s.Category).Where(p => p.IsPickOfTheWeek);
-            }
+            return await ProductsWithCategories
+                .Where(p => p.IsPickOfTheWeek)
+                .ToListAsync();
         }
 
-        public IEnumerable<Product> ProductsByCategory(string categoryName)
+        public async Task<List<Product>> GetProductsByCategoryAsync(string categoryName)
         {
-            // The Where runs in the database (SQL WHERE), so only this category's products are loaded
-            return _eShopEnhancedDbContext.Products
-                .Include(p => p.SubCategory).ThenInclude(s => s.Category)
+            // The Where becomes a SQL WHERE, so only this category's products are loaded
+            return await ProductsWithCategories
                 .Where(p => p.SubCategory.Category.CategoryName == categoryName)
                 .OrderBy(p => p.SubCategory.SubCategoryName)
-                .ThenBy(p => p.Name);
+                .ThenBy(p => p.Name)
+                .ToListAsync();
         }
 
-        public Product? GetProductById(int productId)
+        public async Task<Product?> GetProductByIdAsync(int productId)
         {
-            return _eShopEnhancedDbContext.Products.Include(p => p.SubCategory).ThenInclude(s => s.Category).FirstOrDefault(p => p.ProductId == productId);
+            return await ProductsWithCategories
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
         }
     }
 }

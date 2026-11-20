@@ -16,9 +16,9 @@ namespace eShopEnhanced.ViewComponents
             _categoryRepository = categoryRepository;
         }
 
-        public IViewComponentResult Invoke()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
-            IEnumerable<Category> categories = _categoryRepository.AllCategories;
+            IEnumerable<Category> categories = await _categoryRepository.GetAllCategoriesAsync();
 
             // Renders Views/Shared/Components/CategoryMenu/Default.cshtml
             return View(categories);

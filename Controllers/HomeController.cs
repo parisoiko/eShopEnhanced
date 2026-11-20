@@ -17,11 +17,11 @@ public class HomeController : Controller
         _categoryRepository = categoryRepository;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         HomeViewModel homeViewModel = new HomeViewModel(
-            _productRepository.PicksOfTheWeek,
-            _categoryRepository.AllCategories);
+            await _productRepository.GetPicksOfTheWeekAsync(),
+            await _categoryRepository.GetAllCategoriesAsync());
 
         return View(homeViewModel);
     }

@@ -19,7 +19,7 @@
             @foreach (var product in Model.PicksOfTheWeek)
             {
                 <div class="col-sm-6 col-lg-3">
-                    <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" class="category-card-link">
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" asp-route-slug="@Slug.From(product.Name)" class="category-card-link">
                         <div class="card product-card h-100">
                             <img src="@product.ImageUrl" alt="@product.Name" class="card-img-top product-card-img" />
                             <div class="card-body">
@@ -45,7 +45,7 @@
     {
         <div class="col-sm-6 col-lg-4">
             @* The whole card is one link to that category's product list *@
-            <a asp-controller="Product" asp-action="List" asp-route-category="@category.CategoryName"
+            <a asp-controller="Product" asp-action="List" asp-route-category="@Slug.From(category.CategoryName)"
                class="category-card-link">
                 <div class="card product-card h-100">
                     <img src="@category.ImageUrl" alt="@category.CategoryName" class="card-img-top product-card-img" />
