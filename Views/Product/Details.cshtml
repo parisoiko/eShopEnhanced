@@ -1,4 +1,4 @@
-@model Pie
+@model Product
 
 @{
     ViewData["Title"] = Model.Name;
@@ -10,20 +10,20 @@
     <ol class="breadcrumb shop-breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
         <li class="breadcrumb-item">
-            <a asp-controller="Pie" asp-action="List" asp-route-category="@categoryName">@categoryName</a>
+            <a asp-controller="Product" asp-action="List" asp-route-category="@categoryName">@categoryName</a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
     </ol>
 </nav>
 
-<div class="card pie-card details-card">
+<div class="card product-card details-card">
     <div class="row g-0">
         <div class="col-md-6">
             <img src="@Model.ImageUrl" alt="@Model.Name" class="details-img" />
         </div>
         <div class="col-md-6">
             <div class="card-body p-4">
-                <p class="pie-card-subcategory mb-1">@Model.SubCategory.SubCategoryName</p>
+                <p class="product-card-subcategory mb-1">@Model.SubCategory.SubCategoryName</p>
 
                 <div class="d-flex justify-content-between align-items-baseline gap-3">
                     <h1 class="details-name">@Model.Name</h1>
@@ -40,7 +40,7 @@
                         <span class="badge text-bg-secondary">Sold out</span>
                     }
 
-                    @if (Model.IsPieOfTheWeek)
+                    @if (Model.IsPickOfTheWeek)
                     {
                         <span class="badge shop-badge">&#9733; Pick of the week</span>
                     }
@@ -56,7 +56,7 @@
                     </p>
                 }
 
-                <a asp-controller="Pie" asp-action="List" asp-route-category="@categoryName"
+                <a asp-controller="Product" asp-action="List" asp-route-category="@categoryName"
                    class="btn btn-outline-shop mt-2">&larr; Back to @categoryName</a>
             </div>
         </div>

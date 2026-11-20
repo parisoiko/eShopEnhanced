@@ -7,19 +7,19 @@ namespace eShopEnhanced.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IPieRepository _pieRepository;
+    private readonly IProductRepository _productRepository;
     private readonly ICategoryRepository _categoryRepository;
 
-    public HomeController(IPieRepository pieRepository, ICategoryRepository categoryRepository)
+    public HomeController(IProductRepository productRepository, ICategoryRepository categoryRepository)
     {
-        _pieRepository = pieRepository;
+        _productRepository = productRepository;
         _categoryRepository = categoryRepository;
     }
 
     public IActionResult Index()
     {
         HomeViewModel homeViewModel = new HomeViewModel(
-            _pieRepository.PiesOfTheWeek,
+            _productRepository.PicksOfTheWeek,
             _categoryRepository.AllCategories);
 
         return View(homeViewModel);

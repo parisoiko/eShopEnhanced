@@ -10,6 +10,6 @@ namespace eShopEnhanced.Models
         public int CategoryId { get; set; }
         public Category Category { get; set; } = default!;
 
-        public List<Pie>? Pies { get; set; }
+        public List<Product>? Products { get; set; }
     }
 }

@@ -4,24 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShopEnhanced.Controllers
 {
-    public class PieController: Controller
+    public class ProductController: Controller
     {
-        private readonly IPieRepository _pieRepository;
+        private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
         
-        public PieController(IPieRepository pieRepository, ICategoryRepository categoryRepository)
+        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
-            _pieRepository = pieRepository;
+            _productRepository = productRepository;
             _categoryRepository = categoryRepository;
         }
 
-        // /Pie/List                     -> every product
-        // /Pie/List?category=Cupcakes   -> only that category's products
+        // /Product/List                     -> every product
+        // /Product/List?category=Cupcakes   -> only that category's products
         public IActionResult List(string? category)
         {
             if (string.IsNullOrEmpty(category))
             {
-                return View(new PieListViewModel(_pieRepository.AllPies, "All products"));
+                return View(new ProductListViewModel(_productRepository.AllProducts, "All products"));
             }
 
             // Unknown category in the URL (e.g. ?category=Pizza) -> 404 page
@@ -33,25 +33,25 @@ namespace eShopEnhanced.Controllers
                 return NotFound();
             }
 
-            PieListViewModel pieListViewModel = new PieListViewModel(
-                _pieRepository.PiesByCategory(selectedCategory.CategoryName),
+            ProductListViewModel productListViewModel = new ProductListViewModel(
+                _productRepository.ProductsByCategory(selectedCategory.CategoryName),
                 selectedCategory.CategoryName);
 
-            return View(pieListViewModel);
+            return View(productListViewModel);
         }
 
-        // /Pie/Details/3 -> the "3" comes from the {id?} part of the default route
+        // /Product/Details/3 -> the "3" comes from the {id?} part of the default route
         public IActionResult Details(int id)
         {
-            Pie? pie = _pieRepository.GetPieById(id);
+            Product? product = _productRepository.GetProductById(id);
 
-            // No product with that id (e.g. /Pie/Details/999) -> 404 page
-            if (pie == null)
+            // No product with that id (e.g. /Product/Details/999) -> 404 page
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(pie);
+            return View(product);
         }
 
         public IActionResult ListCategories()

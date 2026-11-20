@@ -44,13 +44,13 @@ namespace eShopEnhanced.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("eShopEnhanced.Models.Pie", b =>
+            modelBuilder.Entity("eShopEnhanced.Models.Product", b =>
                 {
-                    b.Property<int>("PieId")
+                    b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PieId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
 
                     b.Property<string>("AllergyInformation")
                         .HasColumnType("nvarchar(max)");
@@ -64,7 +64,7 @@ namespace eShopEnhanced.Migrations
                     b.Property<bool>("InStock")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsPieOfTheWeek")
+                    b.Property<bool>("IsPickOfTheWeek")
                         .HasColumnType("bit");
 
                     b.Property<string>("LongDescription")
@@ -84,11 +84,11 @@ namespace eShopEnhanced.Migrations
                     b.Property<int>("SubCategoryId")
                         .HasColumnType("int");
 
-                    b.HasKey("PieId");
+                    b.HasKey("ProductId");
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Pies");
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("eShopEnhanced.Models.SubCategory", b =>
@@ -116,10 +116,10 @@ namespace eShopEnhanced.Migrations
                     b.ToTable("SubCategories");
                 });
 
-            modelBuilder.Entity("eShopEnhanced.Models.Pie", b =>
+            modelBuilder.Entity("eShopEnhanced.Models.Product", b =>
                 {
                     b.HasOne("eShopEnhanced.Models.SubCategory", "SubCategory")
-                        .WithMany("Pies")
+                        .WithMany("Products")
                         .HasForeignKey("SubCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -145,7 +145,7 @@ namespace eShopEnhanced.Migrations
 
             modelBuilder.Entity("eShopEnhanced.Models.SubCategory", b =>
                 {
-                    b.Navigation("Pies");
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
-builder.Services.AddScoped<IPieRepository, PieRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddDbContext<eShopEnhancedDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:eShopEnhancedDbConnection"]);

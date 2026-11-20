@@ -4,12 +4,12 @@ namespace eShopEnhanced.ViewModels
 {
     public class HomeViewModel
     {
-        public IEnumerable<Pie> PiesOfTheWeek { get; }
+        public IEnumerable<Product> PicksOfTheWeek { get; }
         public IEnumerable<Category> Categories { get; }
 
-        public HomeViewModel(IEnumerable<Pie> piesOfTheWeek, IEnumerable<Category> categories)
+        public HomeViewModel(IEnumerable<Product> picksOfTheWeek, IEnumerable<Category> categories)
         {
-            PiesOfTheWeek = piesOfTheWeek;
+            PicksOfTheWeek = picksOfTheWeek;
             Categories = categories;
         }
     }
