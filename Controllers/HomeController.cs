@@ -1,21 +1,28 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eShopEnhanced.Models;
+using eShopEnhanced.ViewModels;
 
 namespace eShopEnhanced.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly IPieRepository _pieRepository;
     private readonly ICategoryRepository _categoryRepository;
 
-    public HomeController(ICategoryRepository categoryRepository)
+    public HomeController(IPieRepository pieRepository, ICategoryRepository categoryRepository)
     {
+        _pieRepository = pieRepository;
         _categoryRepository = categoryRepository;
     }
 
     public IActionResult Index()
     {
-        return View(_categoryRepository.AllCategories);
+        HomeViewModel homeViewModel = new HomeViewModel(
+            _pieRepository.PiesOfTheWeek,
+            _categoryRepository.AllCategories);
+
+        return View(homeViewModel);
     }
 
     public IActionResult Privacy()

@@ -154,6 +154,28 @@ body {
   margin: 0.5rem 0 0.25rem;
 }
 
+/* Home page sections */
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.week-section {
+  background-color: #fff6ec;
+  border: 1px solid #ecd9c6;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.week-section .section-title {
+  color: var(--shop-brown);
+}
+
+.week-card-name {
+  font-size: 1.15rem;
+}
+
 /* Details page */
 .shop-breadcrumb a {
   color: var(--shop-brown);

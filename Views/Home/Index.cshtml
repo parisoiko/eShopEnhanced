@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Category>
+﻿@model HomeViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -9,8 +9,39 @@
     <p class="lead">Choose a category to see what's fresh today.</p>
 </div>
 
+@* ===== Picks of the week ===== *@
+@if (Model.PiesOfTheWeek.Any())
+{
+    <section class="week-section mb-5">
+        <h2 class="section-title">&#9733; Picks of the week</h2>
+
+        <div class="row g-4">
+            @foreach (var pie in Model.PiesOfTheWeek)
+            {
+                <div class="col-sm-6 col-lg-3">
+                    <a asp-controller="Pie" asp-action="Details" asp-route-id="@pie.PieId" class="category-card-link">
+                        <div class="card pie-card h-100">
+                            <img src="@pie.ImageUrl" alt="@pie.Name" class="card-img-top pie-card-img" />
+                            <div class="card-body">
+                                <h3 class="pie-card-name week-card-name">@pie.Name</h3>
+                                <div class="d-flex justify-content-between align-items-baseline mt-1">
+                                    <span class="pie-card-subcategory m-0">@pie.SubCategory.Category.CategoryName</span>
+                                    <span class="pie-card-price">@pie.Price.ToString("c")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+@* ===== Categories ===== *@
+<h2 class="section-title">Shop by category</h2>
+
 <div class="row g-4">
-    @foreach (var category in Model)
+    @foreach (var category in Model.Categories)
     {
         <div class="col-sm-6 col-lg-4">
             @* The whole card is one link to that category's product list *@

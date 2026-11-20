@@ -1,9 +1,7 @@
-@using System.Globalization
 @model PieListViewModel
 
 @{
     ViewData["Title"] = Model.CurrentCategory;
-    var euro = CultureInfo.GetCultureInfo("el-GR");
 }
 
 <div class="d-flex align-items-center gap-3 mb-4">
@@ -22,7 +20,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-baseline">
                             <h2 class="pie-card-name">@pie.Name</h2>
-                            <span class="pie-card-price">@pie.Price.ToString("c", euro)</span>
+                            <span class="pie-card-price">@pie.Price.ToString("c")</span>
                         </div>
                         <p class="pie-card-subcategory">@pie.SubCategory.SubCategoryName</p>
                     </div>

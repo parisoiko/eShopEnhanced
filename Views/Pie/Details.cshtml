@@ -1,9 +1,7 @@
-@using System.Globalization
 @model Pie
 
 @{
     ViewData["Title"] = Model.Name;
-    var euro = CultureInfo.GetCultureInfo("el-GR");
     string categoryName = Model.SubCategory.Category.CategoryName;
 }
 
@@ -29,7 +27,7 @@
 
                 <div class="d-flex justify-content-between align-items-baseline gap-3">
                     <h1 class="details-name">@Model.Name</h1>
-                    <span class="details-price">@Model.Price.ToString("c", euro)</span>
+                    <span class="details-price">@Model.Price.ToString("c")</span>
                 </div>
 
                 <div class="mb-3">

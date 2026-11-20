@@ -25,6 +25,15 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Format numbers, prices and dates the Greek way for every request: 15,95 €
+// el-GR is the only supported culture, so a browser asking for another language still gets el-GR.
+var supportedCultures = new[] { "el-GR" };
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .SetDefaultCulture("el-GR")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures));
+
 app.UseRouting();
 
 app.UseAuthorization();
