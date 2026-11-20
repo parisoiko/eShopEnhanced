@@ -4,6 +4,7 @@ namespace eShopEnhanced.Models
     {
         IEnumerable<Pie> AllPies { get; }
         IEnumerable<Pie> PiesOfTheWeek { get; }
+        IEnumerable<Pie> PiesByCategory(string categoryName);
         Pie? GetPieById(int pieId);
     }
 }

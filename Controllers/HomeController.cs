@@ -6,9 +6,16 @@ namespace eShopEnhanced.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly ICategoryRepository _categoryRepository;
+
+    public HomeController(ICategoryRepository categoryRepository)
+    {
+        _categoryRepository = categoryRepository;
+    }
+
     public IActionResult Index()
     {
-        return View();
+        return View(_categoryRepository.AllCategories);
     }
 
     public IActionResult Privacy()

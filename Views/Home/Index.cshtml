@@ -1,9 +1,35 @@
-﻿@{
+﻿@model IEnumerable<Category>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    <a asp-controller="Pie" asp-action="List" class="btn btn-primary">View all pies</a>
+<div class="text-center mb-4">
+    <h1 class="display-5">Welcome</h1>
+    <p class="lead">Choose a category to see what's fresh today.</p>
+</div>
+
+<div class="row g-4">
+    @foreach (var category in Model)
+    {
+        <div class="col-sm-6 col-lg-4">
+            @* The whole card is one link to that category's product list *@
+            <a asp-controller="Pie" asp-action="List" asp-route-category="@category.CategoryName"
+               class="category-card-link">
+                <div class="card pie-card h-100">
+                    <img src="@category.ImageUrl" alt="@category.CategoryName" class="card-img-top pie-card-img" />
+                    <div class="card-body">
+                        <h2 class="pie-card-name">@category.CategoryName</h2>
+                        <p class="category-card-description">@category.Description</p>
+                        @if (category.SubCategories != null && category.SubCategories.Any())
+                        {
+                            <p class="category-card-subcategories">
+                                @string.Join(" · ", category.SubCategories.Select(s => s.SubCategoryName))
+                            </p>
+                        }
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
 </div>

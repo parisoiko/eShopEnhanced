@@ -15,9 +15,28 @@ namespace eShopEnhanced.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        public IActionResult List()
+        // /Pie/List                     -> every product
+        // /Pie/List?category=Cupcakes   -> only that category's products
+        public IActionResult List(string? category)
         {
-            PieListViewModel pieListViewModel = new PieListViewModel(_pieRepository.AllPies, "Cheese cakes");
+            if (string.IsNullOrEmpty(category))
+            {
+                return View(new PieListViewModel(_pieRepository.AllPies, "All products"));
+            }
+
+            // Unknown category in the URL (e.g. ?category=Pizza) -> 404 page
+            Category? selectedCategory = _categoryRepository.AllCategories
+                .FirstOrDefault(c => c.CategoryName == category);
+
+            if (selectedCategory == null)
+            {
+                return NotFound();
+            }
+
+            PieListViewModel pieListViewModel = new PieListViewModel(
+                _pieRepository.PiesByCategory(selectedCategory.CategoryName),
+                selectedCategory.CategoryName);
+
             return View(pieListViewModel);
         }
 

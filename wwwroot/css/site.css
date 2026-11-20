@@ -128,6 +128,38 @@ body {
   white-space: nowrap;
 }
 
+.pie-card-subcategory {
+  color: #777;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.page-title {
+  font-weight: 400;
+}
+
+/* Home page: category cards are links, but shouldn't look like blue underlined text */
+.category-card-link {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.category-card-link:hover {
+  color: inherit;
+}
+
+.category-card-description {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.category-card-subcategories {
+  color: #777;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
 /* Footer on the grey background */
 .footer {
   background-color: #fff;
