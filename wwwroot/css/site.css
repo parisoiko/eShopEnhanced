@@ -71,6 +71,15 @@ body {
   color: #fff;
 }
 
+/* Products dropdown in the header */
+.shop-dropdown {
+  --bs-dropdown-link-active-bg: var(--shop-brown);
+  --bs-dropdown-link-hover-bg: #fff6ec;
+  --bs-dropdown-link-hover-color: var(--shop-brown-dark);
+  border-color: #ecd9c6;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
 /* Buttons in the shop colours */
 .btn-primary {
   --bs-btn-bg: var(--shop-brown);
