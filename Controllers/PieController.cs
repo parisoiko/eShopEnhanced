@@ -40,6 +40,20 @@ namespace eShopEnhanced.Controllers
             return View(pieListViewModel);
         }
 
+        // /Pie/Details/3 -> the "3" comes from the {id?} part of the default route
+        public IActionResult Details(int id)
+        {
+            Pie? pie = _pieRepository.GetPieById(id);
+
+            // No product with that id (e.g. /Pie/Details/999) -> 404 page
+            if (pie == null)
+            {
+                return NotFound();
+            }
+
+            return View(pie);
+        }
+
         public IActionResult ListCategories()
         {
             return View(_categoryRepository.AllCategories);

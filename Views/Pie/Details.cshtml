@@ -1,0 +1,66 @@
+@using System.Globalization
+@model Pie
+
+@{
+    ViewData["Title"] = Model.Name;
+    var euro = CultureInfo.GetCultureInfo("el-GR");
+    string categoryName = Model.SubCategory.Category.CategoryName;
+}
+
+@* Breadcrumb: Home / Cupcakes / Chocolate Cupcake *@
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb shop-breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+        <li class="breadcrumb-item">
+            <a asp-controller="Pie" asp-action="List" asp-route-category="@categoryName">@categoryName</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="card pie-card details-card">
+    <div class="row g-0">
+        <div class="col-md-6">
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="details-img" />
+        </div>
+        <div class="col-md-6">
+            <div class="card-body p-4">
+                <p class="pie-card-subcategory mb-1">@Model.SubCategory.SubCategoryName</p>
+
+                <div class="d-flex justify-content-between align-items-baseline gap-3">
+                    <h1 class="details-name">@Model.Name</h1>
+                    <span class="details-price">@Model.Price.ToString("c", euro)</span>
+                </div>
+
+                <div class="mb-3">
+                    @if (Model.InStock)
+                    {
+                        <span class="badge text-bg-success">In stock</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">Sold out</span>
+                    }
+
+                    @if (Model.IsPieOfTheWeek)
+                    {
+                        <span class="badge shop-badge">&#9733; Pick of the week</span>
+                    }
+                </div>
+
+                <p class="lead">@Model.ShortDescription</p>
+                <p>@Model.LongDescription</p>
+
+                @if (!string.IsNullOrEmpty(Model.AllergyInformation))
+                {
+                    <p class="details-allergy">
+                        <strong>Allergy information:</strong> @Model.AllergyInformation
+                    </p>
+                }
+
+                <a asp-controller="Pie" asp-action="List" asp-route-category="@categoryName"
+                   class="btn btn-outline-shop mt-2">&larr; Back to @categoryName</a>
+            </div>
+        </div>
+    </div>
+</div>
