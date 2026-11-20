@@ -14,6 +14,11 @@ namespace eShopEnhanced.Models
                 context.Categories.AddRange(Categories.Values);
             }
 
+            if (!context.SubCategories.Any())
+            {
+                context.SubCategories.AddRange(SubCategories.Values);
+            }
+
             if (!context.Pies.Any())
             {
                 context.Pies.AddRange(
@@ -23,7 +28,7 @@ namespace eShopEnhanced.Models
                         Price = 15.95M,
                         ShortDescription = "Fresh strawberries on a crunchy base",
                         LongDescription = "Sweet, ripe strawberries piled high on a buttery shortcrust base with a light vanilla cream.",
-                        Category = Categories["Fruit pies"],
+                        SubCategory = SubCategories["Fruit pies"],
                         ImageUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/fruitpies/strawberrypie.jpg",
                         ImageThumbnailUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/fruitpies/strawberrypiesmall.jpg",
                         InStock = true,
@@ -36,7 +41,7 @@ namespace eShopEnhanced.Models
                         ShortDescription = "Creamy, rich and smooth",
                         LongDescription = "A classic baked cheesecake with a biscuit crust and a velvety cream cheese filling.",
                         AllergyInformation = "Contains dairy and gluten",
-                        Category = Categories["Cheese cakes"],
+                        SubCategory = SubCategories["Cheese cakes"],
                         ImageUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/cheesecakes/cheesecake.jpg",
                         ImageThumbnailUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/cheesecakes/cheesecakesmall.jpg",
                         InStock = true,
@@ -48,7 +53,7 @@ namespace eShopEnhanced.Models
                         Price = 15.95M,
                         ShortDescription = "Tangy rhubarb, just sweet enough",
                         LongDescription = "Tart rhubarb baked until soft in a golden pastry case, balanced with a touch of sugar.",
-                        Category = Categories["Fruit pies"],
+                        SubCategory = SubCategories["Fruit pies"],
                         ImageUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/fruitpies/rhubarbpie.jpg",
                         ImageThumbnailUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/fruitpies/rhubarbpiesmall.jpg",
                         InStock = true,
@@ -60,7 +65,7 @@ namespace eShopEnhanced.Models
                         Price = 12.95M,
                         ShortDescription = "Our autumn favourite",
                         LongDescription = "Smooth spiced pumpkin filling with cinnamon and nutmeg, topped with whipped cream.",
-                        Category = Categories["Seasonal pies"],
+                        SubCategory = SubCategories["Seasonal pies"],
                         ImageUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/seasonal/pumpkinpie.jpg",
                         ImageThumbnailUrl = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop/seasonal/pumpkinpiesmall.jpg",
                         InStock = true,
@@ -72,8 +77,9 @@ namespace eShopEnhanced.Models
             context.SaveChanges();
         }
 
-        // Built once, then reused, so each pie points at the SAME Category object.
-        // That way EF inserts each category only once.
+        // Each dictionary is built once, then reused, so every pie points at the SAME
+        // SubCategory object and every subcategory at the SAME Category object.
+        // That way EF inserts each one only once.
         private static Dictionary<string, Category>? categories;
 
         public static Dictionary<string, Category> Categories
@@ -84,9 +90,9 @@ namespace eShopEnhanced.Models
                 {
                     var categoryList = new Category[]
                     {
-                        new Category { CategoryName = "Fruit pies", Description = "All-fruity pies" },
-                        new Category { CategoryName = "Cheese cakes", Description = "Cheesy all the way" },
-                        new Category { CategoryName = "Seasonal pies", Description = "Get in the mood for a seasonal pie" }
+                        new Category { CategoryName = "Pies", Description = "Sweet pies, fresh from the oven" },
+                        new Category { CategoryName = "Cakes", Description = "Cakes for every occasion" },
+                        new Category { CategoryName = "Cupcakes", Description = "Small cakes, big taste" }
                     };
 
                     categories = new Dictionary<string, Category>();
@@ -98,6 +104,33 @@ namespace eShopEnhanced.Models
                 }
 
                 return categories;
+            }
+        }
+
+        private static Dictionary<string, SubCategory>? subCategories;
+
+        public static Dictionary<string, SubCategory> SubCategories
+        {
+            get
+            {
+                if (subCategories == null)
+                {
+                    var subCategoryList = new SubCategory[]
+                    {
+                        new SubCategory { SubCategoryName = "Fruit pies", Description = "All-fruity pies", Category = Categories["Pies"] },
+                        new SubCategory { SubCategoryName = "Seasonal pies", Description = "Get in the mood for a seasonal pie", Category = Categories["Pies"] },
+                        new SubCategory { SubCategoryName = "Cheese cakes", Description = "Cheesy all the way", Category = Categories["Cakes"] }
+                    };
+
+                    subCategories = new Dictionary<string, SubCategory>();
+
+                    foreach (SubCategory subCategory in subCategoryList)
+                    {
+                        subCategories.Add(subCategory.SubCategoryName, subCategory);
+                    }
+                }
+
+                return subCategories;
             }
         }
     }

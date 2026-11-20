@@ -15,7 +15,7 @@ namespace eShopEnhanced.Models
         {
             get
             {
-                return _eShopEnhancedDbContext.Pies.Include(p => p.Category);
+                return _eShopEnhancedDbContext.Pies.Include(p => p.SubCategory).ThenInclude(s => s.Category);
             }
         }
 
@@ -23,13 +23,13 @@ namespace eShopEnhanced.Models
         {
             get
             {
-                return _eShopEnhancedDbContext.Pies.Include(p => p.Category).Where(p => p.IsPieOfTheWeek);
+                return _eShopEnhancedDbContext.Pies.Include(p => p.SubCategory).ThenInclude(s => s.Category).Where(p => p.IsPieOfTheWeek);
             }
         }
 
         public Pie? GetPieById(int pieId)
         {
-            return _eShopEnhancedDbContext.Pies.Include(p => p.Category).FirstOrDefault(p => p.PieId == pieId);
+            return _eShopEnhancedDbContext.Pies.Include(p => p.SubCategory).ThenInclude(s => s.Category).FirstOrDefault(p => p.PieId == pieId);
         }
     }
 }

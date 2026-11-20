@@ -10,6 +10,7 @@ namespace eShopEnhanced.Models
         }
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<Pie> Pies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

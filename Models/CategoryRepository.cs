@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace eShopEnhanced.Models
 {
     public class CategoryRepository : ICategoryRepository
@@ -10,6 +12,8 @@ namespace eShopEnhanced.Models
         }
 
         public IEnumerable<Category> AllCategories =>
-            _eShopEnhancedDbContext.Categories.OrderBy(c => c.CategoryName);
+            _eShopEnhancedDbContext.Categories
+                .Include(c => c.SubCategories)
+                .OrderBy(c => c.CategoryName);
     }
 }

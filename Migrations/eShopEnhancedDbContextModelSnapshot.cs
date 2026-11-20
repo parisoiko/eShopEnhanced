@@ -52,9 +52,6 @@ namespace eShopEnhanced.Migrations
                     b.Property<string>("AllergyInformation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ImageThumbnailUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -81,17 +78,56 @@ namespace eShopEnhanced.Migrations
                     b.Property<string>("ShortDescription")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
                     b.HasKey("PieId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("SubCategoryId");
 
                     b.ToTable("Pies");
                 });
 
+            modelBuilder.Entity("eShopEnhanced.Models.SubCategory", b =>
+                {
+                    b.Property<int>("SubCategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubCategoryId"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubCategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubCategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("SubCategories");
+                });
+
             modelBuilder.Entity("eShopEnhanced.Models.Pie", b =>
                 {
-                    b.HasOne("eShopEnhanced.Models.Category", "Category")
+                    b.HasOne("eShopEnhanced.Models.SubCategory", "SubCategory")
                         .WithMany("Pies")
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubCategory");
+                });
+
+            modelBuilder.Entity("eShopEnhanced.Models.SubCategory", b =>
+                {
+                    b.HasOne("eShopEnhanced.Models.Category", "Category")
+                        .WithMany("SubCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -100,6 +136,11 @@ namespace eShopEnhanced.Migrations
                 });
 
             modelBuilder.Entity("eShopEnhanced.Models.Category", b =>
+                {
+                    b.Navigation("SubCategories");
+                });
+
+            modelBuilder.Entity("eShopEnhanced.Models.SubCategory", b =>
                 {
                     b.Navigation("Pies");
                 });
