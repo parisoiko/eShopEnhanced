@@ -1,11 +1,16 @@
 using eShopEnhanced.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<ICategoryRepository, MockCategoryRepository>();
-builder.Services.AddScoped<IPieRepository, MockPieRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IPieRepository, PieRepository>();
+builder.Services.AddDbContext<eShopEnhancedDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:eShopEnhancedDbConnection"]);
+});
 //builder.Services.AddScoped<ILoggerService, LoggerService>();
 
 var app = builder.Build();
@@ -30,5 +35,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+DbInitializer.Seed(app);
 
 app.Run();
