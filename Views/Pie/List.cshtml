@@ -1,16 +1,26 @@
+@using System.Globalization
 @model PieListViewModel
-<html>
-<body>
-    <div>
-        <h1>@Model.CurrentCategory</h1>
-        @foreach (var pie in Model.Pies)
-        {
-            <div>
-                <h2>@pie.Name</h2>
-                <h3>@pie.Price.ToString("c")</h3>
-                <h4>@pie.Category.CategoryName</h4>
+
+@{
+    ViewData["Title"] = "Pies";
+    var euro = CultureInfo.GetCultureInfo("el-GR");
+}
+
+<div class="mb-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-shop">&larr; Back to home</a>
+</div>
+
+<div class="row g-4">
+    @foreach (var pie in Model.Pies)
+    {
+        <div class="col-sm-6 col-lg-4">
+            <div class="card pie-card h-100">
+                <img src="@pie.ImageUrl" alt="@pie.Name" class="card-img-top pie-card-img" />
+                <div class="card-body d-flex justify-content-between align-items-baseline">
+                    <h2 class="pie-card-name">@pie.Name</h2>
+                    <span class="pie-card-price">@pie.Price.ToString("c", euro)</span>
+                </div>
             </div>
-        }
-    </div>
-</body>
-</html>
+        </div>
+    }
+</div>
