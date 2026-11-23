@@ -1,0 +1,19 @@
+@model Product
+
+@* One product card, used on the home page (picks of the week) and on the product lists.
+   Use it with: <partial name="_ProductCard" model="product" />
+   The surrounding column (<div class="col-...">) is left to the page, so each page decides how wide the cards are. *@
+
+<a asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId" asp-route-slug="@Slug.From(Model.Name)"
+   class="category-card-link">
+    <div class="card product-card h-100">
+        <img src="@Model.ImageUrl" alt="@Model.Name" class="card-img-top product-card-img" />
+        <div class="card-body">
+            <h3 class="product-card-name">@Model.Name</h3>
+            <div class="d-flex justify-content-between align-items-baseline mt-1">
+                <span class="product-card-subcategory m-0">@Model.SubCategory.SubCategoryName</span>
+                <span class="product-card-price">@Model.Price.ToString("c")</span>
+            </div>
+        </div>
+    </div>
+</a>

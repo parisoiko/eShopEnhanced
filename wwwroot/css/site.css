@@ -181,7 +181,8 @@ body {
   color: var(--shop-brown);
 }
 
-.week-card-name {
+/* Cards inside the picks section are narrower, so use a smaller name */
+.week-section .product-card-name {
   font-size: 1.15rem;
 }
 

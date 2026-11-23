@@ -13,19 +13,7 @@
     @foreach (var product in Model.Products)
     {
         <div class="col-sm-6 col-lg-4">
-            @* The whole card links to /Product/Details/{id} *@
-            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" asp-route-slug="@Slug.From(product.Name)" class="category-card-link">
-                <div class="card product-card h-100">
-                    <img src="@product.ImageUrl" alt="@product.Name" class="card-img-top product-card-img" />
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-baseline">
-                            <h2 class="product-card-name">@product.Name</h2>
-                            <span class="product-card-price">@product.Price.ToString("c")</span>
-                        </div>
-                        <p class="product-card-subcategory">@product.SubCategory.SubCategoryName</p>
-                    </div>
-                </div>
-            </a>
+            <partial name="_ProductCard" model="product" />
         </div>
     }
 </div>
