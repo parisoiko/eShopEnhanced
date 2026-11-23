@@ -1,5 +1,5 @@
-# Normalise line endings: text files are stored with LF in the repository and
-# checked out with the platform's usual ending. Stops the "LF will be replaced by CRLF" warnings.
+# Normalise line endings: text files are stored with LF in the repository and checked out
+# with the platform's usual ending, so diffs don't fill up with line-ending changes.
 * text=auto
 
 # Binary files: never touch
