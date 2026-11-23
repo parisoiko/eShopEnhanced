@@ -598,3 +598,135 @@ footer.footer.shop-footer a {
 .checkout-card .input-validation-error {
   border-color: #dc3545;
 }
+
+/* ===== Live product search (Components/ProductSearch.razor) ===== */
+.product-search-input {
+  border-color: #ecd9c6;
+  margin-bottom: 0.75rem;
+}
+
+.product-search-input:focus {
+  border-color: var(--shop-brown);
+  box-shadow: 0 0 0 0.2rem rgba(193, 122, 85, 0.25);
+}
+
+.product-search-hint {
+  color: var(--shop-muted);
+  margin-bottom: 1rem;
+}
+
+/* ===== Navbar search box + dropdown ===== */
+.nav-search {
+  position: relative;
+  margin: 0.5rem 1rem 0.5rem 0;
+  width: 260px;
+}
+
+.nav-search-input {
+  border: none;
+  border-radius: 999px;
+  padding-left: 1rem;
+  background-color: rgba(255, 255, 255, 0.92);
+}
+
+.nav-search-input:focus {
+  background-color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 246, 236, 0.6);
+}
+
+.nav-search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 360px;
+  max-width: 90vw;
+  z-index: 1060;
+  background-color: #fff;
+  border: 1px solid #ecd9c6;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.search-suggestions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
+.search-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--shop-text);
+  text-decoration: none;
+}
+
+.search-suggestion:hover,
+.search-suggestion:focus {
+  background-color: var(--shop-cream);
+  color: var(--shop-text);
+}
+
+.search-suggestion-thumb {
+  width: 48px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  flex-shrink: 0;
+}
+
+.search-suggestion-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.search-suggestion-name {
+  color: var(--shop-brown-dark);
+  font-weight: 500;
+}
+
+.search-suggestion-sub {
+  color: var(--shop-muted);
+  font-size: 0.8rem;
+}
+
+.search-suggestion-price {
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.search-suggestions-all {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid #ecd9c6;
+  background-color: var(--shop-cream);
+  color: var(--shop-brown-dark);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.search-suggestions-all:hover {
+  text-decoration: underline;
+}
+
+.search-suggestions-empty {
+  padding: 0.75rem;
+  color: var(--shop-muted);
+}
+
+/* Phones: the navbar is folded; let the search box use the full width */
+@media (max-width: 575.98px) {
+  .nav-search {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .nav-search-results {
+    left: 0;
+    width: 100%;
+  }
+}

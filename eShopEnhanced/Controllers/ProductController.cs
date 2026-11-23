@@ -19,6 +19,34 @@ namespace eShopEnhanced.Controllers
             _categoryRepository = categoryRepository;
         }
 
+        // /products/search -> the live search page (the Blazor component does the searching).
+        // The literal "search" wins over the {category} route below, because a fixed word is more specific.
+        // /products/search?q=cake also works: the navbar search box sends you here with what you typed
+        [HttpGet("search")]
+        public IActionResult Search(string? q)
+        {
+            ViewBag.SearchQuery = q ?? string.Empty;
+            return View();
+        }
+
+        // /products/search/suggestions?q=cake -> just the dropdown's HTML (no layout), fetched by
+        // site.js while the visitor types in the navbar search box
+        [HttpGet("search/suggestions")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<IActionResult> SearchSuggestions(string? q)
+        {
+            string query = (q ?? string.Empty).Trim();
+            List<Product> products = query.Length >= 2
+                ? await _productRepository.SearchProductsAsync(query)
+                : new List<Product>();
+
+            ViewBag.SearchQuery = query;
+            ViewBag.TotalFound = products.Count;
+
+            // Only the first 6 in the dropdown; "See all results" opens the full search page
+            return PartialView("_SearchSuggestions", products.Take(6).ToList());
+        }
+
         // /products            -> every product
         // /products/cupcakes   -> only that category's products
         [HttpGet("")]

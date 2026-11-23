@@ -10,5 +10,6 @@ namespace eShopEnhanced.Repositories
         Task<List<Product>> GetPicksOfTheWeekAsync();
         Task<List<Product>> GetProductsByCategoryAsync(string categoryName);
         Task<Product?> GetProductByIdAsync(int productId);
+        Task<List<Product>> SearchProductsAsync(string searchQuery);
     }
 }

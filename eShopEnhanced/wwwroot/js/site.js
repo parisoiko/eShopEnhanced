@@ -26,6 +26,70 @@ try {
     }
 } catch (e) { /* nothing saved, or storage unavailable */ }
 
+// Navbar search: from 2 letters, show matching products in a dropdown under the box.
+const searchInput = document.querySelector('.nav-search-input');
+
+if (searchInput) {
+    const searchResults = document.getElementById('navSearchResults');
+    let typingTimer = null;
+    let currentRequest = null;   // lets us cancel a search that's still running when the visitor types on
+
+    function hideSearchResults() {
+        searchResults.hidden = true;
+    }
+
+    searchInput.addEventListener('input', function () {
+        const query = searchInput.value.trim();
+        clearTimeout(typingTimer);
+
+        if (query.length < 2) {
+            hideSearchResults();
+            return;
+        }
+
+        // Wait until the visitor pauses typing for 250 ms, instead of searching on every single key
+        typingTimer = setTimeout(async function () {
+            if (currentRequest) {
+                currentRequest.abort();
+            }
+            currentRequest = new AbortController();
+
+            try {
+                const url = searchInput.dataset.suggestUrl + '?q=' + encodeURIComponent(query);
+                const response = await fetch(url, { signal: currentRequest.signal });
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                searchResults.innerHTML = await response.text();
+                searchResults.hidden = false;
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    hideSearchResults();   // on a real error just hide; Enter still opens the search page
+                }
+            }
+        }, 250);
+    });
+
+    // Escape closes the dropdown
+    searchInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            hideSearchResults();
+        }
+    });
+
+    // Clicking anywhere outside the search box closes it; focusing the box again reopens it
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('.nav-search')) {
+            hideSearchResults();
+        }
+    });
+    searchInput.addEventListener('focus', function () {
+        if (searchInput.value.trim().length >= 2 && searchResults.innerHTML.trim() !== '') {
+            searchResults.hidden = false;
+        }
+    });
+}
+
 // Show any toast messages on the page (e.g. "Black Forest Cake was added to your cart.").
 // Bootstrap toasts are hidden until JavaScript shows them; they hide themselves after data-bs-delay ms.
 document.querySelectorAll('.toast').forEach(function (toastElement) {

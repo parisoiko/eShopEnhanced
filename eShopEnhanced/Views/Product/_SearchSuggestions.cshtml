@@ -1,0 +1,36 @@
+@model List<Product>
+
+@* The dropdown under the navbar search box. Returned by ProductController.SearchSuggestions
+   and inserted by site.js while the visitor types. *@
+
+@{
+    string query = ViewBag.SearchQuery;
+    int totalFound = ViewBag.TotalFound;
+}
+
+@if (!Model.Any())
+{
+    <div class="search-suggestions-empty">No products found for "@query".</div>
+}
+else
+{
+    <ul class="search-suggestions-list">
+        @foreach (Product product in Model)
+        {
+            <li>
+                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId"
+                   asp-route-slug="@Slug.From(product.Name)" class="search-suggestion">
+                    <img src="@product.ImageUrl" alt="" class="search-suggestion-thumb" />
+                    <span class="search-suggestion-text">
+                        <span class="search-suggestion-name">@product.Name</span>
+                        <span class="search-suggestion-sub">@product.SubCategory.SubCategoryName</span>
+                    </span>
+                    <span class="search-suggestion-price">@product.Price.ToString("c")</span>
+                </a>
+            </li>
+        }
+    </ul>
+    <a asp-controller="Product" asp-action="Search" asp-route-q="@query" class="search-suggestions-all">
+        See all @totalFound @(totalFound == 1 ? "result" : "results") for "@query" &rarr;
+    </a>
+}

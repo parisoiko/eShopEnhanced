@@ -14,6 +14,8 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IShoppingCart, ShoppingCart>(sp => ShoppingCart.GetCart(sp));
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
+// Blazor Server: lets Razor components (Components/*.razor) run interactively on the server
+builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<eShopEnhancedDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:eShopEnhancedDbConnection"]);
@@ -51,6 +53,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+// The live connection (SignalR, at /_blazor) that blazor.server.js uses to talk to the components
+app.MapBlazorHub();
 
 DbInitializer.Seed(app);
 

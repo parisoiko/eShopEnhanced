@@ -47,6 +47,23 @@ namespace eShopEnhanced.Repositories
                 .ToListAsync();
         }
 
+        // Finds products whose name, short description, subcategory or category contains the text.
+        // Contains(...) becomes SQL LIKE '%text%', and SQL Server ignores upper/lower case,
+        // so "CAKE", "cake" and "Cake" all match.
+        public async Task<List<Product>> SearchProductsAsync(string searchQuery)
+        {
+            string query = searchQuery.Trim();
+
+            return await ProductsWithCategories
+                .Where(p => p.Name.Contains(query)
+                         || (p.ShortDescription != null && p.ShortDescription.Contains(query))
+                         || p.SubCategory.SubCategoryName.Contains(query)
+                         || p.SubCategory.Category.CategoryName.Contains(query))
+                .OrderBy(p => p.Name)
+                .Take(24)   // never return the whole shop for a one-letter search
+                .ToListAsync();
+        }
+
         public async Task<Product?> GetProductByIdAsync(int productId)
         {
             return await ProductsWithCategories

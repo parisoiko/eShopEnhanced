@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Bakery París</title>
     <script type="importmap"></script>
+    @* Optional extra tags for <head>, added by individual pages (e.g. <base> on the search page) *@
+    @await RenderSectionAsync("Head", required: false)
     <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
     @* Work Sans for text; Libre Baskerville Bold + DM Serif Display Italic for the logo lettering *@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&family=Libre+Baskerville:wght@700&family=DM+Serif+Display:ital@1&display=swap" />
@@ -29,7 +31,6 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <vc:category-menu />
-
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
@@ -38,6 +39,17 @@
                             <email address="info@bakery-paris.example" content="Contact" class="nav-link"></email>
                         </li>
                     </ul>
+
+                    @* Search box. Typing 2+ letters shows a dropdown of matches (site.js fetches
+                       /products/search/suggestions). Enter -> the full search page, which also works
+                       without JavaScript because it's a normal GET form. *@
+                    <form class="nav-search" role="search" method="get" asp-controller="Product" asp-action="Search">
+                        <input class="form-control nav-search-input" type="search" name="q" placeholder="Search products"
+                               aria-label="Search products" autocomplete="off" aria-controls="navSearchResults"
+                               data-suggest-url="@Url.Action("SearchSuggestions", "Product")" />
+                        <div class="nav-search-results" id="navSearchResults" hidden></div>
+                    </form>
+
                     <ul class="navbar-nav">
                         <vc:shopping-cart-summary />
                     </ul>
