@@ -1,0 +1,9 @@
+# Normalise line endings: text files are stored with LF in the repository and
+# checked out with the platform's usual ending. Stops the "LF will be replaced by CRLF" warnings.
+* text=auto
+
+# Binary files: never touch
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
