@@ -1,0 +1,46 @@
+@model Product
+@inject eShopEnhanced.Services.IShoppingCart ShoppingCart
+
+@* The small cart control in the search suggestions:
+     0 in the cart  ->  (basket+)
+     2 in the cart  ->  − 2 +
+   Same idea as _AddToCartButton (site.js updates it without reloading, so the search stays open).
+   ViewBag.ReturnUrl comes from ProductController.SearchSuggestions: the page the visitor is on. *@
+
+@{
+    var amounts = await ShoppingCart.GetProductAmountsAsync();
+    int amount = amounts.TryGetValue(Model.ProductId, out int a) ? a : 0;
+    string returnUrl = ViewBag.ReturnUrl ?? "/";
+}
+
+<div class="cart-control cart-control-compact" data-product-id="@Model.ProductId">
+    <form method="post" asp-controller="ShoppingCart" asp-action="AddToShoppingCart"
+          class="js-cart-form cart-control-add" hidden="@(amount > 0)">
+        <input type="hidden" name="productId" value="@Model.ProductId" />
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+        <button type="submit" class="search-quick-add-btn" disabled="@(!Model.InStock)"
+                title="@(Model.InStock ? "Add to cart" : "Sold out")"
+                aria-label="@(Model.InStock ? $"Add {Model.Name} to cart" : $"{Model.Name} is sold out")">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9h13l-1.4 9.8a1 1 0 0 1-1 .7H6.4a1 1 0 0 1-1-.7L4 9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                <path d="M7.5 9 10 4.5M13.5 9 11 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M19 3v6M16 6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </button>
+    </form>
+
+    <div class="cart-control-stepper" hidden="@(amount == 0)">
+        <form method="post" asp-controller="ShoppingCart" asp-action="RemoveFromShoppingCart" class="js-cart-form">
+            <input type="hidden" name="productId" value="@Model.ProductId" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <button type="submit" class="search-quick-add-btn" aria-label="Remove one @Model.Name">&minus;</button>
+        </form>
+        <span class="cart-control-amount" aria-label="in cart">@amount</span>
+        <form method="post" asp-controller="ShoppingCart" asp-action="AddToShoppingCart" class="js-cart-form">
+            <input type="hidden" name="productId" value="@Model.ProductId" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <button type="submit" class="search-quick-add-btn" aria-label="Add one more @Model.Name"
+                    disabled="@(!Model.InStock)">+</button>
+        </form>
+    </div>
+</div>

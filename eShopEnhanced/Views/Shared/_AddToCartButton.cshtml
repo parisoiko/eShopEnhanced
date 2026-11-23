@@ -1,15 +1,42 @@
 @model Product
+@inject eShopEnhanced.Services.IShoppingCart ShoppingCart
 
-@* A small form that POSTs the product id to ShoppingCartController.AddToShoppingCart.
-   The form tag helper adds a hidden anti-forgery token automatically, which the
-   [ValidateAntiForgeryToken] attribute on the action checks.
-   returnUrl = this page, so after adding, the visitor comes back here.
-   site.js remembers the scroll position when the form is submitted and restores it
-   after the page reloads, so the page doesn't move. *@
-<form method="post" asp-controller="ShoppingCart" asp-action="AddToShoppingCart" class="add-to-cart-form">
-    <input type="hidden" name="productId" value="@Model.ProductId" />
-    <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")" />
-    <button type="submit" class="btn btn-primary w-100" disabled="@(!Model.InStock)">
-        @(Model.InStock ? "Add to cart" : "Sold out")
-    </button>
-</form>
+@* The cart control on product cards and the details page:
+     0 in the cart  ->  [      Add to cart      ]
+     2 in the cart  ->  [ − ]   2 in cart   [ + ]
+   Both states are always in the HTML; site.js shows the right one and updates the number after
+   each click without reloading (class "js-cart-form" = "site.js may send this form with fetch").
+   Without JavaScript the forms are posted normally and returnUrl brings the visitor back here.
+   The anti-forgery token is added to each form by the form tag helper. *@
+
+@{
+    var amounts = await ShoppingCart.GetProductAmountsAsync();   // one query per page, cached
+    int amount = amounts.TryGetValue(Model.ProductId, out int a) ? a : 0;
+    string returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<div class="cart-control" data-product-id="@Model.ProductId">
+    <form method="post" asp-controller="ShoppingCart" asp-action="AddToShoppingCart"
+          class="js-cart-form cart-control-add" hidden="@(amount > 0)">
+        <input type="hidden" name="productId" value="@Model.ProductId" />
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+        <button type="submit" class="btn btn-primary w-100" disabled="@(!Model.InStock)">
+            @(Model.InStock ? "Add to cart" : "Sold out")
+        </button>
+    </form>
+
+    <div class="cart-control-stepper" hidden="@(amount == 0)">
+        <form method="post" asp-controller="ShoppingCart" asp-action="RemoveFromShoppingCart" class="js-cart-form">
+            <input type="hidden" name="productId" value="@Model.ProductId" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <button type="submit" class="btn btn-outline-shop cart-control-btn" aria-label="Remove one @Model.Name">&minus;</button>
+        </form>
+        <span class="cart-control-label" aria-live="polite"><span class="cart-control-amount">@amount</span> in cart</span>
+        <form method="post" asp-controller="ShoppingCart" asp-action="AddToShoppingCart" class="js-cart-form">
+            <input type="hidden" name="productId" value="@Model.ProductId" />
+            <input type="hidden" name="returnUrl" value="@returnUrl" />
+            <button type="submit" class="btn btn-outline-shop cart-control-btn" aria-label="Add one more @Model.Name"
+                    disabled="@(!Model.InStock)">+</button>
+        </form>
+    </div>
+</div>

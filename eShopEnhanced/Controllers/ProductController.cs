@@ -33,8 +33,11 @@ namespace eShopEnhanced.Controllers
         // site.js while the visitor types in the navbar search box
         [HttpGet("search/suggestions")]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<IActionResult> SearchSuggestions(string? q)
+        public async Task<IActionResult> SearchSuggestions(string? q, string? returnUrl)
         {
+            // The page the visitor is on, for the quick-add buttons. Only our own pages are accepted.
+            ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
+
             string query = (q ?? string.Empty).Trim();
             List<Product> products = query.Length >= 2
                 ? await _productRepository.SearchProductsAsync(query)

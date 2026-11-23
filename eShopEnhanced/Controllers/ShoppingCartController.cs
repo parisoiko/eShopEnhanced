@@ -51,10 +51,18 @@ namespace eShopEnhanced.Controllers
         public async Task<IActionResult> AddToShoppingCart(int productId, string? returnUrl)
         {
             Product? selectedProduct = await _productRepository.GetProductByIdAsync(productId);
+            int amount = 0;
 
             if (selectedProduct != null)
             {
-                await _shoppingCart.AddToCartAsync(selectedProduct);
+                amount = await _shoppingCart.AddToCartAsync(selectedProduct);
+            }
+
+            // Sent by site.js (no page reload): answer with JSON so the page can update itself
+            if (IsJavaScriptRequest())
+            {
+                return await CartJsonAsync(productId, amount,
+                    selectedProduct != null ? $"{selectedProduct.Name} was added to your cart." : null);
             }
 
             // Came from a product page -> go back there and show a confirmation.
@@ -71,18 +79,46 @@ namespace eShopEnhanced.Controllers
             return RedirectToAction("Index");
         }
 
-        // POST /ShoppingCart/RemoveFromShoppingCart  (form field: productId)
+        // POST /ShoppingCart/RemoveFromShoppingCart  (form fields: productId, optional returnUrl)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<RedirectToActionResult> RemoveFromShoppingCart(int productId)
+        public async Task<IActionResult> RemoveFromShoppingCart(int productId, string? returnUrl)
         {
             Product? selectedProduct = await _productRepository.GetProductByIdAsync(productId);
+            int amount = 0;
 
             if (selectedProduct != null)
             {
-                await _shoppingCart.RemoveFromCartAsync(selectedProduct);
+                amount = await _shoppingCart.RemoveFromCartAsync(selectedProduct);
             }
+
+            if (IsJavaScriptRequest())
+            {
+                return await CartJsonAsync(productId, amount, message: null);
+            }
+
+            // The - button on a product card (without JavaScript) -> back to that page
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            // The - button on the cart page -> stay on the cart page
             return RedirectToAction("Index");
         }
+
+        // site.js sends this header with its fetch requests; a normal form post doesn't
+        private bool IsJavaScriptRequest() =>
+            Request.Headers.XRequestedWith == "XMLHttpRequest";
+
+        // What site.js needs to update the page: e.g. { productId: 7, amount: 2, cartCount: 5, message: "..." }
+        private async Task<JsonResult> CartJsonAsync(int productId, int amount, string? message) =>
+            Json(new
+            {
+                productId,
+                amount,
+                cartCount = await _shoppingCart.GetShoppingCartItemCountAsync(),
+                message
+            });
     }
 }

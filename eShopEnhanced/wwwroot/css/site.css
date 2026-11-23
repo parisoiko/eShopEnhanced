@@ -438,7 +438,7 @@ footer.footer.shop-footer a {
 
 /* ===== "Added to cart" toast ===== */
 .cart-toast-container {
-  margin-top: 84px; /* just below the 80px header */
+  margin-bottom: 64px; /* bottom-right, just above the footer, so it never covers the search dropdown */
   z-index: 1080;
 }
 
@@ -638,7 +638,7 @@ footer.footer.shop-footer a {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  width: 360px;
+  width: 400px;
   max-width: 90vw;
   z-index: 1060;
   background-color: #fff;
@@ -729,4 +729,99 @@ footer.footer.shop-footer a {
     left: 0;
     width: 100%;
   }
+}
+
+/* Quick-add button next to each search suggestion */
+.search-suggestion-row {
+  display: flex;
+  align-items: center;
+}
+
+.search-suggestion-row .search-suggestion {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.search-quick-add {
+  padding-right: 0.75rem;
+}
+
+.search-quick-add-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--shop-brown);
+  border-radius: 50%;
+  background-color: #fff;
+  color: var(--shop-brown);
+  padding: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.search-quick-add-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.search-quick-add-btn:hover:not(:disabled),
+.search-quick-add-btn:focus-visible {
+  background-color: var(--shop-brown);
+  color: #fff;
+}
+
+.search-quick-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===== Cart controls: "Add to cart" <-> [ − ] 2 in cart [ + ] ===== */
+/* [hidden] must win over the display: flex below */
+.cart-control [hidden] {
+  display: none !important;
+}
+
+.cart-control-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border: 1px solid var(--shop-brown);
+  border-radius: 0.375rem;
+  padding: 0.2rem;
+  background-color: var(--shop-cream);
+}
+
+.cart-control-btn {
+  width: 2.5rem;
+  padding-left: 0;
+  padding-right: 0;
+  font-weight: 700;
+  background-color: #fff;
+}
+
+.cart-control-label {
+  color: var(--shop-brown-dark);
+  font-weight: 500;
+}
+
+/* Compact version in the search suggestions: − 2 + with small round buttons */
+.cart-control-compact .cart-control-stepper {
+  border: none;
+  padding: 0;
+  background: none;
+  gap: 0.35rem;
+}
+
+.cart-control-compact .cart-control-amount {
+  min-width: 1.2rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--shop-brown-dark);
+}
+
+.cart-control-compact .search-quick-add-btn {
+  font-weight: 700;
+  line-height: 1;
 }

@@ -1,30 +1,82 @@
 ﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
-// Keep the page still when adding to the cart.
-// "Add to cart" submits a form, which reloads the page and would normally start at the top.
-// So: just before the form is sent, remember where we were; after the reload, go straight back there.
-// (sessionStorage = a small per-tab storage in the browser; try/catch because it can be blocked.)
-document.addEventListener('submit', function (event) {
-    if (event.target.matches('.add-to-cart-form')) {
-        try {
-            sessionStorage.setItem('restoreScroll', JSON.stringify({
-                page: location.pathname + location.search,
-                y: window.scrollY
-            }));
-        } catch (e) { /* storage unavailable: the page will simply start at the top */ }
+// ===== Add to cart / remove from cart WITHOUT reloading the page =====
+// Every cart button lives in a form with class "js-cart-form" (see _AddToCartButton and
+// _QuickAddControl). Instead of letting the browser post it (which reloads the page), we send
+// it with fetch. The server sees the X-Requested-With header and answers with JSON:
+//   { productId: 7, amount: 2, cartCount: 5, message: "Black Forest Cake was added to your cart." }
+// and we update the page. The page doesn't move and the search dropdown stays open.
+document.addEventListener('submit', async function (event) {
+    const form = event.target.closest('form.js-cart-form');
+    if (!form) {
+        return;   // some other form (checkout, search...): leave it alone
+    }
+    event.preventDefault();
+
+    const button = form.querySelector('button');
+    button.disabled = true;   // no double clicks while the request is on its way
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),   // includes productId and the anti-forgery token
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        });
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+        const cart = await response.json();
+
+        updateCartControls(cart.productId, cart.amount);
+        updateCartBadge(cart.cartCount);
+        if (cart.message) {
+            showToast(cart.message);
+        }
+    } catch (error) {
+        form.submit();   // something went wrong: fall back to a normal post (page reload)
+    } finally {
+        button.disabled = false;
     }
 });
 
-try {
-    const saved = JSON.parse(sessionStorage.getItem('restoreScroll'));
-    sessionStorage.removeItem('restoreScroll');
-    // Only restore on the page the visitor was on (not after "+" on the cart page etc.)
-    if (saved && saved.page === location.pathname + location.search) {
-        // behavior 'instant': Bootstrap turns on smooth scrolling, which would visibly glide down from the top
-        window.scrollTo({ top: saved.y, behavior: 'instant' });
+// Every control for that product on the page (a card AND a search suggestion can both show it)
+function updateCartControls(productId, amount) {
+    document.querySelectorAll('.cart-control[data-product-id="' + productId + '"]').forEach(function (control) {
+        control.querySelector('.cart-control-add').hidden = amount > 0;
+        control.querySelector('.cart-control-stepper').hidden = amount === 0;
+        control.querySelector('.cart-control-amount').textContent = amount;
+    });
+}
+
+function updateCartBadge(count) {
+    const badge = document.querySelector('.nav-cart-badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.hidden = count === 0;
     }
-} catch (e) { /* nothing saved, or storage unavailable */ }
+}
+
+// The same pop-up the server shows after a normal post, built here in JavaScript.
+// textContent (not innerHTML) for the message, so a product name can never inject HTML.
+function showToast(message) {
+    let container = document.querySelector('.cart-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container position-fixed bottom-0 end-0 p-3 cart-toast-container';
+        document.body.appendChild(container);
+    }
+    container.innerHTML =
+        '<div class="toast cart-toast" role="status" aria-live="polite" aria-atomic="true" data-bs-delay="3000">' +
+        '  <div class="d-flex align-items-center">' +
+        '    <div class="toast-body"><span class="cart-toast-check" aria-hidden="true">&#10003;</span> <span class="cart-toast-text"></span>' +
+        '      <a href="/ShoppingCart" class="cart-toast-link" data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-controls="miniCart">View cart &rarr;</a></div>' +
+        '    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
+        '  </div>' +
+        '</div>';
+    container.querySelector('.cart-toast-text').textContent = message;
+    bootstrap.Toast.getOrCreateInstance(container.querySelector('.toast')).show();
+}
 
 // Navbar search: from 2 letters, show matching products in a dropdown under the box.
 const searchInput = document.querySelector('.nav-search-input');
@@ -55,7 +107,9 @@ if (searchInput) {
             currentRequest = new AbortController();
 
             try {
-                const url = searchInput.dataset.suggestUrl + '?q=' + encodeURIComponent(query);
+                // returnUrl = this page, so the quick-add buttons in the dropdown bring the visitor back here
+                const url = searchInput.dataset.suggestUrl + '?q=' + encodeURIComponent(query) +
+                    '&returnUrl=' + encodeURIComponent(location.pathname + location.search);
                 const response = await fetch(url, { signal: currentRequest.signal });
                 if (!response.ok) {
                     throw new Error('HTTP ' + response.status);

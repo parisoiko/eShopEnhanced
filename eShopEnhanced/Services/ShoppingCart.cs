@@ -30,7 +30,7 @@ namespace eShopEnhanced.Services
             return new ShoppingCart(context) { ShoppingCartId = cartId };
         }
 
-        public async Task AddToCartAsync(Product product)
+        public async Task<int> AddToCartAsync(Product product)
         {
             var shoppingCartItem =
                     await _eShopEnhancedDbContext.ShoppingCartItems.SingleOrDefaultAsync(
@@ -54,6 +54,9 @@ namespace eShopEnhanced.Services
                 shoppingCartItem.Amount++;
             }
             await _eShopEnhancedDbContext.SaveChangesAsync();
+            productAmounts = null;   // the cached amounts are out of date now
+
+            return shoppingCartItem.Amount;
         }
 
         public async Task<int> RemoveFromCartAsync(Product product)
@@ -78,8 +81,19 @@ namespace eShopEnhanced.Services
             }
 
             await _eShopEnhancedDbContext.SaveChangesAsync();
+            productAmounts = null;   // the cached amounts are out of date now
 
             return localAmount;
+        }
+
+        // Cached for the rest of this request (ShoppingCart is a scoped service: one per request)
+        private Dictionary<int, int>? productAmounts;
+
+        public async Task<Dictionary<int, int>> GetProductAmountsAsync()
+        {
+            return productAmounts ??= await _eShopEnhancedDbContext.ShoppingCartItems
+                .Where(c => c.ShoppingCartId == ShoppingCartId)
+                .ToDictionaryAsync(c => c.ProductId, c => c.Amount);
         }
 
         public async Task<List<ShoppingCartItem>> GetShoppingCartItemsAsync()
