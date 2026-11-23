@@ -111,14 +111,23 @@ namespace eShopEnhanced.Controllers
         private bool IsJavaScriptRequest() =>
             Request.Headers.XRequestedWith == "XMLHttpRequest";
 
-        // What site.js needs to update the page: e.g. { productId: 7, amount: 2, cartCount: 5, message: "..." }
-        private async Task<JsonResult> CartJsonAsync(int productId, int amount, string? message) =>
-            Json(new
+        // What site.js needs to update the page:
+        //   { productId: 7, amount: 2, cartCount: 5, cartTotal: 53.1, cartTotalText: "53,10 €", message: "..." }
+        // cartTotalText is formatted HERE, with the site's culture (el-GR), so the navbar shows
+        // exactly the same format as the rest of the site; JavaScript just displays it.
+        private async Task<JsonResult> CartJsonAsync(int productId, int amount, string? message)
+        {
+            decimal total = await _shoppingCart.GetShoppingCartTotalAsync();
+
+            return Json(new
             {
                 productId,
                 amount,
                 cartCount = await _shoppingCart.GetShoppingCartItemCountAsync(),
+                cartTotal = total,
+                cartTotalText = total.ToString("c"),
                 message
             });
+        }
     }
 }

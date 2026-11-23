@@ -29,7 +29,7 @@ document.addEventListener('submit', async function (event) {
         const cart = await response.json();
 
         updateCartControls(cart.productId, cart.amount);
-        updateCartBadge(cart.cartCount);
+        updateCartBadge(cart.cartCount, cart.cartTotal, cart.cartTotalText);
         if (cart.message) {
             showToast(cart.message);
         }
@@ -49,11 +49,17 @@ function updateCartControls(productId, amount) {
     });
 }
 
-function updateCartBadge(count) {
+// The navbar: "Cart (3) · 53,10 €". The total text arrives already formatted by the server.
+function updateCartBadge(count, total, totalText) {
     const badge = document.querySelector('.nav-cart-badge');
     if (badge) {
         badge.textContent = count;
         badge.hidden = count === 0;
+    }
+    const totalElement = document.querySelector('.nav-cart-total');
+    if (totalElement) {
+        totalElement.textContent = totalText;
+        totalElement.hidden = !(total > 0);
     }
 }
 

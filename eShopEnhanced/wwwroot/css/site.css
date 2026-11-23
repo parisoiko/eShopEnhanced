@@ -825,3 +825,15 @@ footer.footer.shop-footer a {
   font-weight: 700;
   line-height: 1;
 }
+
+/* Cart total next to the count in the navbar: "Cart (3) · 53,10 €" */
+.nav-cart-total {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.nav-cart-total::before {
+  content: "\00B7";   /* the middle dot · */
+  margin-right: 0.35rem;
+  opacity: 0.8;
+}

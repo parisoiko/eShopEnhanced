@@ -1,6 +1,6 @@
-@model int
+@model ShoppingCartSummaryViewModel
 
-@* Model = how many pieces are in the cart *@
+@* Model.ItemCount = how many pieces are in the cart, Model.Total = what they cost *@
 <li class="nav-item">
     @* data-bs-toggle="offcanvas": with JavaScript, clicking opens the slide-out cart panel (#miniCart in _Layout)
        instead of following the link. Without JavaScript, the href still goes to the cart page. *@
@@ -12,7 +12,8 @@
             <path d="M8.5 9 11 4M15.5 9 13 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
         </svg>
         Cart
-        @* Always in the page (hidden when 0), so site.js can update the number after an add/remove *@
-        <span class="nav-cart-badge" aria-label="items in cart" hidden="@(Model == 0)">@Model</span>
+        @* Always in the page (hidden when the cart is empty), so site.js can update them after an add/remove *@
+        <span class="nav-cart-badge" aria-label="items in cart" hidden="@(Model.ItemCount == 0)">@Model.ItemCount</span>
+        <span class="nav-cart-total" aria-label="cart total" hidden="@(Model.Total <= 0)">@Model.Total.ToString("c")</span>
     </a>
 </li>
