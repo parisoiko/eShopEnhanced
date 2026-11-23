@@ -13,9 +13,7 @@ namespace eShopEnhanced.Repositories
             _eShopEnhancedDbContext = eShopEnhancedDbContext;
         }
 
-        // The starting point for every product query:
-        // - AsNoTracking: we only read, so EF doesn't need to watch the objects for changes
-        // - Include/ThenInclude: load the subcategory and its category in the same SQL query
+        // Base for every product query: read-only, with subcategory and category loaded in the same query
         private IQueryable<Product> ProductsWithCategories =>
             _eShopEnhancedDbContext.Products
                 .AsNoTracking()
@@ -39,7 +37,6 @@ namespace eShopEnhanced.Repositories
 
         public async Task<List<Product>> GetProductsByCategoryAsync(string categoryName)
         {
-            // The Where becomes a SQL WHERE, so only this category's products are loaded
             return await ProductsWithCategories
                 .Where(p => p.SubCategory.Category.CategoryName == categoryName)
                 .OrderBy(p => p.SubCategory.SubCategoryName)
@@ -47,9 +44,8 @@ namespace eShopEnhanced.Repositories
                 .ToListAsync();
         }
 
-        // Finds products whose name, short description, subcategory or category contains the text.
-        // Contains(...) becomes SQL LIKE '%text%', and SQL Server ignores upper/lower case,
-        // so "CAKE", "cake" and "Cake" all match.
+        // Matches name, short description, subcategory or category. Contains() translates to
+        // LIKE '%...%', which is case-insensitive under SQL Server's default collation.
         public async Task<List<Product>> SearchProductsAsync(string searchQuery)
         {
             string query = searchQuery.Trim();

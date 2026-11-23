@@ -24,8 +24,7 @@ namespace eShopEnhanced.Repositories
 
         public async Task<Category?> GetCategoryByNameAsync(string categoryName)
         {
-            // This comparison runs in SQL Server, which ignores upper/lower case by default,
-            // and only the one matching row is loaded.
+            // Case-insensitive thanks to SQL Server's default collation
             return await _eShopEnhancedDbContext.Categories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.CategoryName == categoryName);

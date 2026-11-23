@@ -10,34 +10,29 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IShoppingCart, ShoppingCart>(sp => ShoppingCart.GetCart(sp));
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
-// Blazor Server: lets Razor components (Components/*.razor) run interactively on the server
+// Blazor Server, used by the live search component (Components/ProductSearch.razor)
 builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<eShopEnhancedDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:eShopEnhancedDbConnection"]);
 });
 
-// ASP.NET Core Identity: user accounts stored in our database (via eShopEnhancedDbContext),
-// plus ready-made Register / Log in / Log out pages (the "default UI", built as Razor Pages).
-// RequireConfirmedAccount = false: no confirmation email needed (we don't send emails yet).
+// No account confirmation: the app doesn't send email.
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<eShopEnhancedDbContext>()
-    // Puts the user's first and last name into the login cookie (as "claims"), so the navbar
-    // can show the initials on every page without a database query. See AppClaimsPrincipalFactory.
+    // Adds first/last name claims so the navbar can show initials without a database query.
     .AddClaimsPrincipalFactory<AppClaimsPrincipalFactory>();
 
-// The Identity pages are Razor Pages, so the app must also serve Razor Pages
+// Required by the Identity UI, which is built with Razor Pages
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-app.UseStaticFiles();
 app.UseSession();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -49,8 +44,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Format numbers, prices and dates the Greek way for every request: 15,95 €
-// el-GR is the only supported culture, so a browser asking for another language still gets el-GR.
+// el-GR is the only supported culture, so prices and dates always render the Greek way (15,95 €),
+// whatever language the browser asks for.
 var supportedCultures = new[] { "el-GR" };
 app.UseRequestLocalization(new RequestLocalizationOptions()
     .SetDefaultCulture("el-GR")
@@ -59,10 +54,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions()
 
 app.UseRouting();
 
-// Order matters: first find out WHO the visitor is (reads the login cookie)...
+// Authentication must come before authorization, otherwise [Authorize] always sees an anonymous user.
 app.UseAuthentication();
-// ...then decide WHAT they may do ([Authorize] on OrderController). The other way round,
-// authorization would always see an anonymous visitor.
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -72,12 +65,15 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-// The live connection (SignalR, at /_blazor) that blazor.server.js uses to talk to the components
+// SignalR endpoint (/_blazor) used by blazor.server.js
 app.MapBlazorHub();
 
-// The Identity pages: /Identity/Account/Login, /Identity/Account/Register, ...
+// Identity UI: /Identity/Account/Login, /Identity/Account/Register, ...
 app.MapRazorPages();
 
 DbInitializer.Seed(app);
 
 app.Run();
+
+// Makes the top-level Program class public for WebApplicationFactory<Program> in the integration tests.
+public partial class Program { }

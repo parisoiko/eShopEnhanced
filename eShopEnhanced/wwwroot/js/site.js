@@ -1,16 +1,11 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// ===== Add to cart / remove from cart WITHOUT reloading the page =====
-// Every cart button lives in a form with class "js-cart-form" (see _AddToCartButton and
-// _QuickAddControl). Instead of letting the browser post it (which reloads the page), we send
-// it with fetch. The server sees the X-Requested-With header and answers with JSON:
-//   { productId: 7, amount: 2, cartCount: 5, message: "Black Forest Cake was added to your cart." }
-// and we update the page. The page doesn't move and the search dropdown stays open.
+﻿// ===== Add to / remove from cart without a page reload =====
+// "js-cart-form" forms (_AddToCartButton, _QuickAddControl) are posted with fetch; the
+// X-Requested-With header makes the server answer with JSON instead of redirecting, so the
+// page keeps its scroll position and the search dropdown stays open.
 document.addEventListener('submit', async function (event) {
     const form = event.target.closest('form.js-cart-form');
     if (!form) {
-        return;   // some other form (checkout, search...): leave it alone
+        return;
     }
     event.preventDefault();
 
@@ -20,7 +15,7 @@ document.addEventListener('submit', async function (event) {
     try {
         const response = await fetch(form.action, {
             method: 'POST',
-            body: new FormData(form),   // includes productId and the anti-forgery token
+            body: new FormData(form),   // includes the anti-forgery token
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
         });
         if (!response.ok) {
@@ -34,7 +29,7 @@ document.addEventListener('submit', async function (event) {
             showToast(cart.message);
         }
     } catch (error) {
-        form.submit();   // something went wrong: fall back to a normal post (page reload)
+        form.submit();   // fall back to a normal post
     } finally {
         button.disabled = false;
     }
@@ -63,8 +58,7 @@ function updateCartBadge(count, total, totalText) {
     }
 }
 
-// The same pop-up the server shows after a normal post, built here in JavaScript.
-// textContent (not innerHTML) for the message, so a product name can never inject HTML.
+// Client-side version of the _Layout toast. The message goes in via textContent so it can't inject HTML.
 function showToast(message) {
     let container = document.querySelector('.cart-toast-container');
     if (!container) {
@@ -90,7 +84,7 @@ const searchInput = document.querySelector('.nav-search-input');
 if (searchInput) {
     const searchResults = document.getElementById('navSearchResults');
     let typingTimer = null;
-    let currentRequest = null;   // lets us cancel a search that's still running when the visitor types on
+    let currentRequest = null;   // aborted when a newer search starts
 
     function hideSearchResults() {
         searchResults.hidden = true;
@@ -105,7 +99,7 @@ if (searchInput) {
             return;
         }
 
-        // Wait until the visitor pauses typing for 250 ms, instead of searching on every single key
+        // Debounce: search once typing pauses for 250 ms
         typingTimer = setTimeout(async function () {
             if (currentRequest) {
                 currentRequest.abort();
@@ -113,7 +107,7 @@ if (searchInput) {
             currentRequest = new AbortController();
 
             try {
-                // returnUrl = this page, so the quick-add buttons in the dropdown bring the visitor back here
+                // returnUrl: the non-JS quick-add fallback brings the visitor back to this page
                 const url = searchInput.dataset.suggestUrl + '?q=' + encodeURIComponent(query) +
                     '&returnUrl=' + encodeURIComponent(location.pathname + location.search);
                 const response = await fetch(url, { signal: currentRequest.signal });
@@ -150,15 +144,13 @@ if (searchInput) {
     });
 }
 
-// Show any toast messages on the page (e.g. "Black Forest Cake was added to your cart.").
-// Bootstrap toasts are hidden until JavaScript shows them; they hide themselves after data-bs-delay ms.
+// Show server-rendered toasts (e.g. the TempData "added to cart" message)
 document.querySelectorAll('.toast').forEach(function (toastElement) {
     bootstrap.Toast.getOrCreateInstance(toastElement).show();
 });
 
-// Slide-out cart panel: every time it starts opening, fetch the current cart contents
-// from /ShoppingCart/MiniCart and put them into the panel.
-// Loading on open (instead of on every page) means pages don't run a cart query nobody looks at.
+// Slide-out cart: load /ShoppingCart/MiniCart each time it opens, rather than rendering the
+// cart on every page where nobody may look at it.
 const miniCart = document.getElementById('miniCart');
 
 if (miniCart) {

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShopEnhanced.Controllers
 {
-    // Attribute routing: every URL of this controller starts with /products
     [Route("products")]
     public class ProductController : Controller
     {
@@ -19,9 +18,8 @@ namespace eShopEnhanced.Controllers
             _categoryRepository = categoryRepository;
         }
 
-        // /products/search -> the live search page (the Blazor component does the searching).
-        // The literal "search" wins over the {category} route below, because a fixed word is more specific.
-        // /products/search?q=cake also works: the navbar search box sends you here with what you typed
+        // /products/search?q=cake: hosts the Blazor live search; q comes from the navbar search box.
+        // The literal "search" segment takes precedence over the {category} route below.
         [HttpGet("search")]
         public IActionResult Search(string? q)
         {
@@ -29,13 +27,12 @@ namespace eShopEnhanced.Controllers
             return View();
         }
 
-        // /products/search/suggestions?q=cake -> just the dropdown's HTML (no layout), fetched by
-        // site.js while the visitor types in the navbar search box
+        // HTML fragment for the navbar search dropdown, fetched by site.js while the visitor types
         [HttpGet("search/suggestions")]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> SearchSuggestions(string? q, string? returnUrl)
         {
-            // The page the visitor is on, for the quick-add buttons. Only our own pages are accepted.
+            // Return target for the quick-add buttons; local URLs only (open-redirect protection)
             ViewBag.ReturnUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
 
             string query = (q ?? string.Empty).Trim();
@@ -61,7 +58,6 @@ namespace eShopEnhanced.Controllers
                 return View(new ProductListViewModel(await _productRepository.GetAllProductsAsync(), "All products"));
             }
 
-            // Unknown category in the URL (e.g. /products/pizza) -> 404 page
             Category? selectedCategory = await _categoryRepository.GetCategoryByNameAsync(category);
 
             if (selectedCategory == null)
@@ -77,21 +73,18 @@ namespace eShopEnhanced.Controllers
         }
 
         // /products/7/black-forest-cake
-        // {id:int} only matches numbers, so /products/7 is a product and /products/cakes is a category.
-        // The slug is only there to make the URL readable; the id alone finds the product.
+        // {id:int} keeps product ids apart from category names; the slug is cosmetic, the id finds the product.
         [HttpGet("{id:int}/{slug?}")]
         public async Task<IActionResult> Details(int id, string? slug)
         {
             Product? product = await _productRepository.GetProductByIdAsync(id);
 
-            // No product with that id (e.g. /products/999) -> 404 page
             if (product == null)
             {
                 return NotFound();
             }
 
-            // Missing or wrong slug (/products/7 or /products/7/old-name) -> permanent redirect
-            // to the one correct URL, so every product has exactly one address
+            // Missing or outdated slug: 301 to the canonical URL, so each product has exactly one address
             string correctSlug = Slug.From(product.Name);
             if (slug != correctSlug)
             {

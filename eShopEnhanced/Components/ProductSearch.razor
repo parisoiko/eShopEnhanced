@@ -1,12 +1,4 @@
-@*
-    Live product search: a Blazor component.
-    It runs on the SERVER. blazor.server.js in the browser keeps a live connection (SignalR) open;
-    every keystroke is sent to the server, OnInput runs here in C#, and Blazor sends back only the
-    parts of the HTML that changed. No page reload, and no JavaScript written by us.
-
-    Used in Views/Product/Search.cshtml with:
-      <component type="typeof(eShopEnhanced.Components.ProductSearch)" render-mode="ServerPrerendered" />
-*@
+@* Live product search (Blazor Server), hosted by Views/Product/Search.cshtml *@
 
 @inject IServiceScopeFactory ScopeFactory
 
@@ -34,8 +26,8 @@
         <div class="row g-4">
             @foreach (Product product in results)
             {
-                @* The same look as _ProductCard. Blazor components can't use MVC partials or
-                   tag helpers like asp-route-id, so the details link is written out by hand. *@
+                @* Mirrors _ProductCard. MVC partials and tag helpers aren't available in Blazor,
+                   so the details URL is built by hand. *@
                 string detailsUrl = $"/products/{product.ProductId}/{Slug.From(product.Name)}";
 
                 <div class="col-sm-6 col-lg-4">
@@ -67,10 +59,9 @@
     private string searchText = string.Empty;
     private List<Product> results = new();
 
-    // Counts searches, so a slow, OLD search can never overwrite the results of a newer one
+    // Search counter, so a slow older search can't overwrite the results of a newer one
     private int latestSearch;
 
-    // Runs when the component starts: search straight away if the page was opened with a query
     protected override async Task OnInitializedAsync()
     {
         await SearchAsync(InitialQuery);
@@ -92,9 +83,8 @@
             return;
         }
 
-        // A fresh scope (and so a fresh DbContext) per search. In Blazor Server one component lives as
-        // long as the browser tab, and fast typing starts overlapping searches; a single shared
-        // DbContext would fail with "a second operation was started on this context".
+        // Fresh scope (and DbContext) per search: the component lives as long as the circuit and fast
+        // typing overlaps searches, which a shared DbContext rejects ("a second operation was started").
         using IServiceScope scope = ScopeFactory.CreateScope();
         var productRepository = scope.ServiceProvider.GetRequiredService<IProductRepository>();
         List<Product> found = await productRepository.SearchProductsAsync(searchText);

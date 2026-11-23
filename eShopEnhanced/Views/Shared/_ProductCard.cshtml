@@ -1,10 +1,8 @@
 @model Product
 
-@* One product card, used on the home page (picks of the week) and on the product lists.
-   Use it with: <partial name="_ProductCard" model="product" />
-   The surrounding column (<div class="col-...">) is left to the page, so each page decides how wide the cards are.
-   The photo and the name link to the details page; the button below adds the product to the cart
-   (a button can't sit inside a link, so the card itself is no longer one big link). *@
+@* Product card for the home page and product lists. The grid column is left to the caller.
+   Photo and name link to the details page; the cart button sits outside those links
+   (interactive content can't be nested inside a link). *@
 
 <div class="card product-card h-100">
     <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId" asp-route-slug="@Slug.From(Model.Name)">
@@ -19,7 +17,7 @@
             <span class="product-card-subcategory m-0">@Model.SubCategory.SubCategoryName</span>
             <span class="product-card-price">@Model.Price.ToString("c")</span>
         </div>
-        @* mt-auto pushes the button to the bottom, so buttons line up across cards of different heights *@
+        @* Pinned to the bottom so buttons line up across cards of different heights *@
         <div class="mt-auto">
             <partial name="_AddToCartButton" model="Model" />
         </div>

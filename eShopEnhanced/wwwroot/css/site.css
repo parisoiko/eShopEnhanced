@@ -719,7 +719,7 @@ footer.footer.shop-footer a {
 }
 
 /* Phones: the navbar is folded; let the search box use the full width */
-@media (max-width: 575.98px) {
+@media (max-width: 991.98px) {
   .nav-search {
     width: 100%;
     margin-right: 0;
@@ -896,4 +896,15 @@ footer.footer.shop-footer a {
 .nav-account-menu-name {
   font-weight: 500;
   color: var(--shop-brown-dark);
+}
+
+/* Keep navbar links on one line; give the search box less room on medium-wide screens */
+.shop-header .nav-link {
+  white-space: nowrap;
+}
+
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .nav-search {
+    width: 200px;
+  }
 }

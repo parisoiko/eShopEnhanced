@@ -3,8 +3,7 @@
 }
 
 @section Head {
-    @* Blazor works out its connection address (/_blazor) relative to the page's base address.
-       This page lives at /products/search, so without <base href="/"> it would try /products/_blazor. *@
+    @* Blazor resolves /_blazor against the base address; without this it would try /products/_blazor. *@
     <base href="~/" />
 }
 
@@ -13,15 +12,11 @@
     <h1 class="page-title m-0">Search</h1>
 </div>
 
-@* The Blazor component. render-mode="ServerPrerendered": the server first sends normal HTML
-   (fast first view, works for search engines), then blazor.server.js connects and makes it live. *@
-@* param-InitialQuery sets the component's [Parameter] InitialQuery: what was typed in the navbar *@
+@* Prerendered for a fast first paint; InitialQuery is the text typed in the navbar search box *@
 <component type="typeof(eShopEnhanced.Components.ProductSearch)" render-mode="ServerPrerendered"
            param-InitialQuery="@((string)ViewBag.SearchQuery)" />
 
 @section Scripts {
-    @* Only this page needs Blazor's live connection, so the script is loaded here, not in _Layout.
-       "~/" = from the root of the site. Without it the browser would look in /products/_framework/,
-       because this page lives at /products/search. *@
+    @* Only this page uses Blazor, so the script is loaded here rather than in _Layout *@
     <script src="~/_framework/blazor.server.js"></script>
 }

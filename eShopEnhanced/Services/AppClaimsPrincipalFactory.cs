@@ -5,10 +5,8 @@ using Microsoft.Extensions.Options;
 
 namespace eShopEnhanced.Services
 {
-    // When someone logs in, Identity builds a "ClaimsPrincipal": the bundle of facts about the user
-    // (id, email...) that's stored, encrypted, in the login cookie and available on every request as
-    // User. This factory adds the first and last name to that bundle, so the navbar can show
-    // "MP" without loading the user from the database on every page.
+    // Adds first/last name claims to the login cookie, so the navbar can show the user's initials
+    // without loading the user from the database on every request.
     public class AppClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser>
     {
         public const string FirstNameClaim = "FirstName";

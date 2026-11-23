@@ -4,10 +4,8 @@
 @* The cart control on product cards and the details page:
      0 in the cart  ->  [      Add to cart      ]
      2 in the cart  ->  [ − ]   2 in cart   [ + ]
-   Both states are always in the HTML; site.js shows the right one and updates the number after
-   each click without reloading (class "js-cart-form" = "site.js may send this form with fetch").
-   Without JavaScript the forms are posted normally and returnUrl brings the visitor back here.
-   The anti-forgery token is added to each form by the form tag helper. *@
+   Both states are always rendered; site.js submits "js-cart-form" forms with fetch and toggles them.
+   Without JavaScript the forms post normally and returnUrl brings the visitor back here. *@
 
 @{
     var amounts = await ShoppingCart.GetProductAmountsAsync();   // one query per page, cached

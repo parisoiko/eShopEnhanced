@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShopEnhanced.Controllers
 {
-    // [Authorize] on the controller = every action needs a logged-in user.
-    // A visitor who isn't logged in is sent to /Identity/Account/Login?ReturnUrl=/Order/Checkout
-    // and comes straight back here after logging in. The cart is kept (it's tied to the session).
+    // Anonymous visitors are sent to the login page and returned here afterwards.
+    // The cart survives the round trip because it is keyed by the session, not the user.
     [Authorize]
     public class OrderController : Controller
     {
@@ -24,8 +23,7 @@ namespace eShopEnhanced.Controllers
             _userManager = userManager;
         }
 
-        // GET /Order/Checkout -> the checkout form, already filled in from the customer's account
-        // (they can still change anything, e.g. to send the order to another address)
+        // Pre-filled from the customer's account; everything stays editable (e.g. to ship elsewhere).
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
@@ -51,10 +49,6 @@ namespace eShopEnhanced.Controllers
             return View(prefilled);
         }
 
-        // POST /Order/Checkout -> the filled-in form arrives here.
-        // MODEL BINDING: ASP.NET Core creates an Order and fills each property from the form field
-        // with the same name (FirstName=Maria -> order.FirstName = "Maria"). While doing that it also
-        // checks the rules (required fields...) and writes any problems into ModelState.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Checkout(Order order)
@@ -62,8 +56,7 @@ namespace eShopEnhanced.Controllers
             List<ShoppingCartItem> items = await _shoppingCart.GetShoppingCartItemsAsync();
             _shoppingCart.ShoppingCartItems = items;
 
-            // Our own rule on top of the field rules: no order without products.
-            // "" as the key = an error for the whole form, shown by <div asp-validation-summary="ModelOnly">
+            // No order without products (form-level error, shown in the validation summary)
             if (items.Count == 0)
             {
                 ModelState.AddModelError("", "Your cart is empty. Add some products before checking out.");
@@ -74,26 +67,20 @@ namespace eShopEnhanced.Controllers
                 await _orderRepository.CreateOrderAsync(order);
                 await _shoppingCart.ClearCartAsync();
 
-                // Redirect instead of showing a page directly ("Post/Redirect/Get"):
-                // refreshing the thank-you page then can't submit the order a second time.
-                // TempData carries the order number across that one redirect.
+                // Post/Redirect/Get: refreshing the confirmation page can't resubmit the order.
                 TempData["OrderId"] = order.OrderId;
                 return RedirectToAction(nameof(CheckoutComplete));
             }
 
-            // Something is wrong: show the form again WITH the order, so everything the visitor
-            // typed stays filled in and the error messages appear next to the fields.
+            // Redisplay the form with the user's input and the validation errors
             return View(order);
         }
 
-        // GET /Order/CheckoutComplete -> "thank you" page
         [HttpGet]
         public IActionResult CheckoutComplete()
         {
-            // The order number arrives through TempData from the Checkout POST (only once)
             object? orderId = TempData["OrderId"];
 
-            // ViewBag: a quick way to hand a single value to the view without a view model
             ViewBag.CheckoutCompleteMessage = orderId != null
                 ? $"Thanks for your order #{orderId}! You'll soon be enjoying our freshly baked treats."
                 : "Thanks for your order! You'll soon be enjoying our freshly baked treats.";

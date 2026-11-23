@@ -17,7 +17,6 @@ namespace eShopEnhanced.Controllers
             _shoppingCart = shoppingCart;
         }
 
-        // /ShoppingCart -> the cart page
         public async Task<ViewResult> Index()
         {
             var items = await _shoppingCart.GetShoppingCartItemsAsync();
@@ -28,9 +27,8 @@ namespace eShopEnhanced.Controllers
             return View(shoppingCartViewModel);
         }
 
-        // /ShoppingCart/MiniCart -> just the cart contents as an HTML fragment (no layout),
-        // fetched by JavaScript when the slide-out cart panel opens. See site.js.
-        // NoStore: the browser must never show an old copy of the cart.
+        // Cart contents as an HTML fragment for the slide-out panel, fetched by site.js when it opens.
+        // NoStore: the browser must never show a stale copy of the cart.
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<PartialViewResult> MiniCart()
         {
@@ -39,13 +37,9 @@ namespace eShopEnhanced.Controllers
 
             var shoppingCartViewModel = new ShoppingCartViewModel(_shoppingCart, await _shoppingCart.GetShoppingCartTotalAsync());
 
-            // PartialView: renders Views/ShoppingCart/_MiniCart.cshtml WITHOUT _Layout
             return PartialView("_MiniCart", shoppingCartViewModel);
         }
 
-        // POST /ShoppingCart/AddToShoppingCart  (form fields: productId, optional returnUrl)
-        // [HttpPost]: only a form submit can change the cart, never a plain link click.
-        // [ValidateAntiForgeryToken]: rejects posts that didn't come from one of our own forms.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToShoppingCart(int productId, string? returnUrl)
@@ -58,19 +52,17 @@ namespace eShopEnhanced.Controllers
                 amount = await _shoppingCart.AddToCartAsync(selectedProduct);
             }
 
-            // Sent by site.js (no page reload): answer with JSON so the page can update itself
+            // fetch() from site.js: answer with JSON so the page can update without a reload
             if (IsJavaScriptRequest())
             {
                 return await CartJsonAsync(productId, amount,
                     selectedProduct != null ? $"{selectedProduct.Name} was added to your cart." : null);
             }
 
-            // Came from a product page -> go back there and show a confirmation.
-            // Url.IsLocalUrl only allows addresses on our own site, so nobody can craft a form
-            // that adds to the cart and then sends the visitor off to another website.
+            // Back to the originating page with a confirmation toast.
+            // Url.IsLocalUrl prevents open redirects through a crafted returnUrl.
             if (selectedProduct != null && !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                // TempData survives exactly one redirect: it's shown on the next page, then gone
                 TempData["CartMessage"] = $"{selectedProduct.Name} was added to your cart.";
                 return LocalRedirect(returnUrl);
             }
@@ -79,7 +71,6 @@ namespace eShopEnhanced.Controllers
             return RedirectToAction("Index");
         }
 
-        // POST /ShoppingCart/RemoveFromShoppingCart  (form fields: productId, optional returnUrl)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveFromShoppingCart(int productId, string? returnUrl)
@@ -111,10 +102,8 @@ namespace eShopEnhanced.Controllers
         private bool IsJavaScriptRequest() =>
             Request.Headers.XRequestedWith == "XMLHttpRequest";
 
-        // What site.js needs to update the page:
-        //   { productId: 7, amount: 2, cartCount: 5, cartTotal: 53.1, cartTotalText: "53,10 €", message: "..." }
-        // cartTotalText is formatted HERE, with the site's culture (el-GR), so the navbar shows
-        // exactly the same format as the rest of the site; JavaScript just displays it.
+        // { productId: 7, amount: 2, cartCount: 5, cartTotal: 53.1, cartTotalText: "53,10 €", message: "..." }
+        // cartTotalText is formatted server-side with the site culture (el-GR) so it matches the rest of the UI.
         private async Task<JsonResult> CartJsonAsync(int productId, int amount, string? message)
         {
             decimal total = await _shoppingCart.GetShoppingCartTotalAsync();

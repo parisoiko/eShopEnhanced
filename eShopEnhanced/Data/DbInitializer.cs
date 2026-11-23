@@ -1,13 +1,32 @@
-using eShopEnhanced.Models;
+﻿using eShopEnhanced.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace eShopEnhanced.Data
 {
     public static class DbInitializer
     {
         public static void Seed(IApplicationBuilder applicationBuilder)
         {
-            // The DbContext is a scoped service, so we create a scope to get one outside of a web request
+            // Build fresh seed objects for every database (they receive ids once saved)
+            categories = null;
+            subCategories = null;
+
+            // DbContext is scoped, so resolve it from an explicit scope (there is no request here)
             using var scope = applicationBuilder.ApplicationServices.CreateScope();
             eShopEnhancedDbContext context = scope.ServiceProvider.GetRequiredService<eShopEnhancedDbContext>();
+
+            // Create or update the database schema on start-up, so a fresh clone runs with just F5.
+            // SQL Server: apply the EF Core migrations (does nothing when already up to date).
+            // Other providers (SQLite in the integration tests): the migrations are SQL Server specific,
+            // so build the schema straight from the model instead.
+            if (context.Database.IsSqlServer())
+            {
+                context.Database.Migrate();
+            }
+            else
+            {
+                context.Database.EnsureCreated();
+            }
 
             // Only seed an empty database, so restarting the app doesn't add duplicates
             if (!context.Categories.Any())
@@ -27,9 +46,7 @@ namespace eShopEnhanced.Data
 
             context.SaveChanges();
         }
-
-        // Course images (hosted by Pluralsight) and our own images in wwwroot/images/products
-        private const string CourseImages = "https://gillcleerenpluralsight.blob.core.windows.net/files/bethanyspieshop";
+        // Product photos in wwwroot/images/products (credits in IMAGE-CREDITS.md)
         private const string OurImages = "/images/products";
 
         // Each dictionary is built once, then reused, so every product points at the SAME
@@ -45,7 +62,7 @@ namespace eShopEnhanced.Data
                 {
                     var categoryList = new Category[]
                     {
-                        new Category { CategoryName = "Pies", Description = "Sweet pies, fresh from the oven", ImageUrl = $"{CourseImages}/fruitpies/strawberrypie.jpg" },
+                        new Category { CategoryName = "Pies", Description = "Sweet pies, fresh from the oven", ImageUrl = $"{OurImages}/strawberry-pie.jpg" },
                         new Category { CategoryName = "Cakes", Description = "Cakes for every occasion", ImageUrl = $"{OurImages}/black-forest-cake.jpg" },
                         new Category { CategoryName = "Cupcakes", Description = "Small cakes, big taste", ImageUrl = $"{OurImages}/chocolate-cupcake.jpg" },
                         new Category { CategoryName = "Cookies", Description = "Crunchy, chewy and everything in between", ImageUrl = $"{OurImages}/chocolate-chip-cookies.jpg" },
@@ -109,7 +126,6 @@ namespace eShopEnhanced.Data
             }
         }
 
-        // Small helper so each product fits on a few lines
         private static Product CreateProduct(string name, decimal price, string subCategory, string imageUrl,
             string shortDescription, string longDescription, string? allergyInformation = null, bool isPickOfTheWeek = false)
         {
@@ -131,11 +147,11 @@ namespace eShopEnhanced.Data
         private static Product[] Products => new Product[]
         {
             // ----- Pies -----
-            CreateProduct("Strawberry Pie", 15.95M, "Fruit pies", $"{CourseImages}/fruitpies/strawberrypie.jpg",
+            CreateProduct("Strawberry Pie", 15.95M, "Fruit pies", $"{OurImages}/strawberry-pie.jpg",
                 "Fresh strawberries on a crunchy base",
                 "Sweet, ripe strawberries piled high on a buttery shortcrust base with a light vanilla cream.",
                 "Contains gluten and dairy"),
-            CreateProduct("Rhubarb Pie", 15.95M, "Fruit pies", $"{CourseImages}/fruitpies/rhubarbpie.jpg",
+            CreateProduct("Rhubarb Pie", 15.95M, "Fruit pies", $"{OurImages}/rhubarb-pie.jpg",
                 "Tangy rhubarb, just sweet enough",
                 "Tart rhubarb baked until soft in a golden pastry case, balanced with a touch of sugar.",
                 "Contains gluten", isPickOfTheWeek: true),
@@ -143,13 +159,13 @@ namespace eShopEnhanced.Data
                 "Grandma's recipe, with cinnamon",
                 "Chunky apples with cinnamon and a hint of lemon under a flaky double crust.",
                 "Contains gluten and dairy"),
-            CreateProduct("Pumpkin Pie", 12.95M, "Seasonal pies", $"{CourseImages}/seasonal/pumpkinpie.jpg",
+            CreateProduct("Pumpkin Pie", 12.95M, "Seasonal pies", $"{OurImages}/pumpkin-pie.jpg",
                 "Our autumn favourite",
                 "Smooth spiced pumpkin filling with cinnamon and nutmeg, topped with whipped cream.",
                 "Contains gluten, dairy and eggs", isPickOfTheWeek: true),
 
             // ----- Cakes -----
-            CreateProduct("Cheese cake", 18.95M, "Cheese cakes", $"{CourseImages}/cheesecakes/cheesecake.jpg",
+            CreateProduct("Cheese cake", 18.95M, "Cheese cakes", $"{OurImages}/cheese-cake.jpg",
                 "Creamy, rich and smooth",
                 "A classic baked cheesecake with a biscuit crust and a velvety cream cheese filling.",
                 "Contains gluten, dairy and eggs"),

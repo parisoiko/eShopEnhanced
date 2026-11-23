@@ -4,9 +4,8 @@
 
 @* Navbar account area:
      logged out ->  Log in · Register
-     logged in  ->  a round avatar with the initials ("MP"); clicking it opens a small menu.
-   First and last name come from the login cookie ("claims", see AppClaimsPrincipalFactory),
-   so no database query is needed on every page. *@
+     logged in  ->  avatar with the initials ("MP") opening an account menu
+   The name comes from cookie claims (AppClaimsPrincipalFactory), so no database query per page. *@
 
 @if (SignInManager.IsSignedIn(User))
 {
@@ -30,7 +29,7 @@
                 <li><hr class="dropdown-divider" /></li>
                 <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">My account</a></li>
                 <li>
-                    @* Logging out changes something, so it's a POST form (with anti-forgery token), not a link *@
+                    @* Log out changes state, so it's an anti-forgery-protected POST, not a link *@
                     <form method="post" asp-area="Identity" asp-page="/Account/Logout"
                           asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                         <button type="submit" class="dropdown-item">Log out</button>

@@ -4,10 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eShopEnhanced.Data
 {
-    // IdentityDbContext = DbContext + the tables ASP.NET Core Identity needs
-    // (AspNetUsers, AspNetRoles, AspNetUserRoles, ...). It's still our one shop database.
-    // Identity configures those tables in base.OnModelCreating(...), which we already call.
-    // <ApplicationUser>: use our own user class (with name and address) instead of IdentityUser.
+    // Shop tables and ASP.NET Core Identity tables in one database, with ApplicationUser as the user type.
     public class eShopEnhancedDbContext : IdentityDbContext<ApplicationUser>
     {
         public eShopEnhancedDbContext(DbContextOptions<eShopEnhancedDbContext> options)
@@ -26,7 +23,6 @@ namespace eShopEnhanced.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // decimal(18,2): up to 18 digits, 2 after the decimal point (e.g. 15.95)
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasPrecision(18, 2);

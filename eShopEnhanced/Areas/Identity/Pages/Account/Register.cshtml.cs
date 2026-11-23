@@ -7,13 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace eShopEnhanced.Areas.Identity.Pages.Account
 {
-    // Our own Register page. It's at the same path as Identity's built-in one
-    // (Areas/Identity/Pages/Account/Register), so it replaces it.
-    //
-    // A Razor Page = Register.cshtml (the HTML) + this PageModel (the C#):
-    //   OnGet()       -> shows the empty form            (like an MVC [HttpGet] action)
-    //   OnPostAsync() -> receives the filled-in form     (like an MVC [HttpPost] action)
-    //   [BindProperty] Input -> model binding fills it from the form, like the Order parameter in checkout
+    // Overrides the Identity UI Register page (same path) to also collect the checkout details.
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
@@ -128,8 +122,7 @@ namespace eShopEnhanced.Areas.Identity.Pages.Account
                 Country = Input.Country
             };
 
-            // UserManager hashes the password and saves the user. It also checks Identity's own rules
-            // (password strength, email already taken...) and reports them as errors.
+            // Also enforces Identity's own rules (password strength, duplicate email)
             IdentityResult result = await _userManager.CreateAsync(user, Input.Password);
 
             if (result.Succeeded)
@@ -140,13 +133,12 @@ namespace eShopEnhanced.Areas.Identity.Pages.Account
 
             foreach (IdentityError error in result.Errors)
             {
-                // "" = a form-wide error, shown in the validation summary
                 ModelState.AddModelError(string.Empty, error.Description);
             }
             return Page();
         }
 
-        // Only our own pages, never another website
+        // Local URLs only (open-redirect protection)
         private string SafeReturnUrl(string? returnUrl) =>
             !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/";
     }

@@ -28,7 +28,7 @@ namespace eShopEnhanced.Repositories
             {
                 order.OrderDetails.Add(new OrderDetail
                 {
-                    // Set the foreign key, not the Product itself (same reason as in the cart)
+                    // Set the FK, not the Product: products are loaded AsNoTracking, so EF would try to insert them
                     ProductId = shoppingCartItem.ProductId,
                     Amount = shoppingCartItem.Amount,
                     // Copy today's price, so later price changes don't change this order
@@ -36,7 +36,6 @@ namespace eShopEnhanced.Repositories
                 });
             }
 
-            // Adding the order also adds its OrderDetails (EF follows the list)
             _eShopEnhancedDbContext.Orders.Add(order);
             await _eShopEnhancedDbContext.SaveChangesAsync();
         }

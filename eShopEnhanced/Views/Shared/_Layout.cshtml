@@ -16,7 +16,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark shop-header mb-4">
+        <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-dark shop-header mb-4">
             <div class="container">
                 <a class="navbar-brand shop-logo" asp-area="" asp-controller="Home" asp-action="Index">
                     <partial name="_Logo" />
@@ -25,7 +25,7 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -35,23 +35,20 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            @* Email tag helper; class="nav-link" isn't one of its properties, so it's copied onto the <a> *@
                             <email address="info@bakery-paris.example" content="Contact" class="nav-link"></email>
                         </li>
                     </ul>
 
-                    @* Search box. Typing 2+ letters shows a dropdown of matches (site.js fetches
-                       /products/search/suggestions). Enter -> the full search page, which also works
-                       without JavaScript because it's a normal GET form. *@
+                    @* 2+ letters show a suggestions dropdown (site.js); Enter submits a plain GET form
+                       to the full search page, so search also works without JavaScript. *@
                     <div class="nav-search">
                         <form role="search" method="get" asp-controller="Product" asp-action="Search">
                             <input class="form-control nav-search-input" type="search" name="q" placeholder="Search products"
                                    aria-label="Search products" autocomplete="off" aria-controls="navSearchResults"
                                    data-suggest-url="@Url.Action("SearchSuggestions", "Product")" />
                         </form>
-                        @* The dropdown is NEXT TO the search form, not inside it: it contains its own
-                           add-to-cart forms, and HTML doesn't allow a form inside another form
-                           (the browser would silently drop the inner one). *@
+                        @* Sits next to the search form, not inside it: the dropdown contains add-to-cart
+                           forms, and nested forms are invalid HTML (browsers drop the inner one). *@
                         <div class="nav-search-results" id="navSearchResults" hidden></div>
                     </div>
 
@@ -64,7 +61,7 @@
             </div>
         </nav>
     </header>
-    @* "Added to cart" confirmation, set by ShoppingCartController via TempData (shown once) *@
+    @* "Added to cart" confirmation after a non-JavaScript add (TempData from ShoppingCartController) *@
     @if (TempData["CartMessage"] is string cartMessage)
     {
         <div class="toast-container position-fixed bottom-0 end-0 p-3 cart-toast-container">
@@ -82,8 +79,7 @@
         </div>
     }
 
-    @* Slide-out cart panel. Opened by the Cart link in the navbar; its contents are fetched
-       from /ShoppingCart/MiniCart when it opens (see site.js). *@
+    @* Slide-out cart; its contents are fetched from /ShoppingCart/MiniCart each time it opens (site.js) *@
     <div class="offcanvas offcanvas-end mini-cart" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel">
         <div class="offcanvas-header">
             <h2 class="offcanvas-title" id="miniCartLabel">Your cart</h2>
@@ -107,7 +103,6 @@
             </a>
             <span>
                 &copy; 2026 Bakery París &middot;
-                @* Custom tag helper (TagHelpers/EmailTagHelper.cs): becomes <a href="mailto:...">Contact us</a> *@
                 <email address="info@bakery-paris.example" content="Contact us"></email> &middot;
                 <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
             </span>

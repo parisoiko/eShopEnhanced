@@ -9,15 +9,6 @@
     <h1 class="page-title m-0">Checkout</h1>
 </div>
 
-@*
-    Form tag helpers:
-      <form asp-action="Checkout">      -> action="/Order/Checkout" method="post" + a hidden anti-forgery token
-      <label asp-for="FirstName">       -> <label for="FirstName">First name</label>   (text from [Display])
-      <input asp-for="FirstName">       -> <input id="FirstName" name="FirstName" type="text" value="...">
-      <span asp-validation-for="...">   -> where the error message for that field will appear
-      <div asp-validation-summary>      -> a list of all errors (ModelOnly = errors not tied to one field)
-    The name="FirstName" attributes are what model binding uses (next lesson) to fill an Order object.
-*@
 <div class="card product-card checkout-card">
     <form asp-action="Checkout" method="post" class="p-4">
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -84,9 +75,6 @@
     </form>
 </div>
 
-@* Client-side validation: jQuery Validation + Microsoft's "unobtrusive" adapter read the
-   data-val-* attributes on the inputs and check them in the browser before the form is sent.
-   _Layout renders this section after jQuery has loaded. *@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

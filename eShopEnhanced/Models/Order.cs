@@ -5,22 +5,15 @@ namespace eShopEnhanced.Models
 {
     public class Order
     {
-        // [BindNever]: model binding never fills these from the form, even if someone adds
-        // fake fields like "OrderTotal=0.01" to the request. Only the server sets them.
+        // [BindNever] guards against over-posting (e.g. a forged "OrderTotal=0.01"): only the server sets these.
         [BindNever]
         public int OrderId { get; set; }
 
         [BindNever]
         public List<OrderDetail>? OrderDetails { get; set; }
 
-        // Validation rules. Each one is checked twice:
-        //  - in the browser, before the form is sent (jQuery validation, from the data-val-* attributes
-        //    that asp-for writes into the <input>), so the visitor gets instant feedback;
-        //  - on the server, during model binding (ModelState.IsValid), because browser checks can be bypassed.
-        // [Display(Name = ...)] is the label text; {0} in a message is replaced by it, {1} by the length.
-        // [Required] is written out explicitly: the implicit "non-nullable string = required" rule is NOT
-        // checked when a field is left out of the request completely (tested).
-        // [StringLength] is also used by EF Core: the column becomes nvarchar(50) instead of nvarchar(max).
+        // [Required] is explicit because the implicit non-nullable rule isn't applied when a field is
+        // missing from the request entirely. [StringLength] also sizes the column (nvarchar(n), not max).
 
         [Required(ErrorMessage = "Please enter your first name")]
         [StringLength(50, ErrorMessage = "{0} can be at most {1} characters")]

@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace eShopEnhanced.Models
 {
-    // Our user: everything Identity already has (Email, PasswordHash, PhoneNumber...)
-    // PLUS the details the checkout form asks for, so registered customers don't type them twice.
-    // Stored as extra columns in the AspNetUsers table. Same maximum lengths as Order.
+    // Identity user extended with the checkout details, so registered customers don't type them twice.
+    // Stored as extra AspNetUsers columns, with the same maximum lengths as Order.
     public class ApplicationUser : IdentityUser
     {
         public string FirstName { get; set; } = string.Empty;     // max 50

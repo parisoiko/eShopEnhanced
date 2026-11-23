@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShopEnhanced.ViewComponents
 {
-    // A view component is like a mini controller + view that can be dropped into any page,
-    // including _Layout.cshtml, and fetches its own data.
-    // Used in the layout as: <vc:category-menu />
+    // Navbar "Products" dropdown (<vc:category-menu /> in _Layout)
     public class CategoryMenu : ViewComponent
     {
         private readonly ICategoryRepository _categoryRepository;
@@ -20,7 +18,6 @@ namespace eShopEnhanced.ViewComponents
         {
             IEnumerable<Category> categories = await _categoryRepository.GetAllCategoriesAsync();
 
-            // Renders Views/Shared/Components/CategoryMenu/Default.cshtml
             return View(categories);
         }
     }
