@@ -56,8 +56,13 @@
                     </p>
                 }
 
-                <a asp-controller="Product" asp-action="List" asp-route-category="@Slug.From(categoryName)"
-                   class="btn btn-outline-shop mt-2">&larr; Back to @categoryName</a>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <div class="details-add-to-cart">
+                        <partial name="_AddToCartButton" model="Model" />
+                    </div>
+                    <a asp-controller="Product" asp-action="List" asp-route-category="@Slug.From(categoryName)"
+                       class="btn btn-outline-shop">&larr; Back to @categoryName</a>
+                </div>
             </div>
         </div>
     </div>

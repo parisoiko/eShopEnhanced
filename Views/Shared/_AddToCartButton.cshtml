@@ -1,0 +1,15 @@
+@model Product
+
+@* A small form that POSTs the product id to ShoppingCartController.AddToShoppingCart.
+   The form tag helper adds a hidden anti-forgery token automatically, which the
+   [ValidateAntiForgeryToken] attribute on the action checks.
+   returnUrl = this page, so after adding, the visitor comes back here.
+   site.js remembers the scroll position when the form is submitted and restores it
+   after the page reloads, so the page doesn't move. *@
+<form method="post" asp-controller="ShoppingCart" asp-action="AddToShoppingCart" class="add-to-cart-form">
+    <input type="hidden" name="productId" value="@Model.ProductId" />
+    <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")" />
+    <button type="submit" class="btn btn-primary w-100" disabled="@(!Model.InStock)">
+        @(Model.InStock ? "Add to cart" : "Sold out")
+    </button>
+</form>

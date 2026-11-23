@@ -91,6 +91,30 @@ namespace eShopEnhanced.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("eShopEnhanced.Models.ShoppingCartItem", b =>
+                {
+                    b.Property<int>("ShoppingCartItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoppingCartItemId"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShoppingCartId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ShoppingCartItemId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ShoppingCartItems");
+                });
+
             modelBuilder.Entity("eShopEnhanced.Models.SubCategory", b =>
                 {
                     b.Property<int>("SubCategoryId")
@@ -125,6 +149,17 @@ namespace eShopEnhanced.Migrations
                         .IsRequired();
 
                     b.Navigation("SubCategory");
+                });
+
+            modelBuilder.Entity("eShopEnhanced.Models.ShoppingCartItem", b =>
+                {
+                    b.HasOne("eShopEnhanced.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("eShopEnhanced.Models.SubCategory", b =>

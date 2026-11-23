@@ -34,10 +34,43 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+                    <ul class="navbar-nav">
+                        <vc:shopping-cart-summary />
+                    </ul>
                 </div>
             </div>
         </nav>
     </header>
+    @* "Added to cart" confirmation, set by ShoppingCartController via TempData (shown once) *@
+    @if (TempData["CartMessage"] is string cartMessage)
+    {
+        <div class="toast-container position-fixed top-0 end-0 p-3 cart-toast-container">
+            <div class="toast cart-toast" role="status" aria-live="polite" aria-atomic="true" data-bs-delay="4000">
+                <div class="d-flex align-items-center">
+                    <div class="toast-body">
+                        <span class="cart-toast-check" aria-hidden="true">&#10003;</span>
+                        @cartMessage
+                        <a asp-controller="ShoppingCart" asp-action="Index" class="cart-toast-link"
+                           data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-controls="miniCart">View cart &rarr;</a>
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Slide-out cart panel. Opened by the Cart link in the navbar; its contents are fetched
+       from /ShoppingCart/MiniCart when it opens (see site.js). *@
+    <div class="offcanvas offcanvas-end mini-cart" tabindex="-1" id="miniCart" aria-labelledby="miniCartLabel">
+        <div class="offcanvas-header">
+            <h2 class="offcanvas-title" id="miniCartLabel">Your cart</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body" id="miniCartBody" data-url="@Url.Action("MiniCart", "ShoppingCart")">
+            <p class="mini-cart-loading">Loading your cart&hellip;</p>
+        </div>
+    </div>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

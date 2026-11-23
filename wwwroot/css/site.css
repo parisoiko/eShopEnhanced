@@ -321,3 +321,247 @@ footer.footer.shop-footer .footer-logo {
 footer.footer.shop-footer a {
   color: var(--shop-brown-dark);
 }
+
+/* ===== Product card links (photo + name link to details; button adds to cart) ===== */
+.product-card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.product-card-title-link:hover {
+  color: var(--shop-brown-dark);
+  text-decoration: underline;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+}
+
+.details-add-to-cart {
+  min-width: 180px;
+}
+
+/* ===== Navbar cart link ===== */
+.nav-cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nav-cart-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* The number next to "Cart": cream pill with terracotta text */
+.nav-cart-badge {
+  min-width: 1.4rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background-color: var(--shop-cream);
+  color: var(--shop-brown-dark);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ===== Shopping cart page ===== */
+.cart-card {
+  padding: 0.5rem 1rem;
+}
+
+.cart-card:hover,
+.cart-empty:hover {
+  transform: none; /* no "lift" effect on big panels */
+}
+
+.cart-table th {
+  color: var(--shop-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-bottom-color: #ecd9c6;
+}
+
+.cart-thumb-cell {
+  width: 88px;
+}
+
+.cart-thumb {
+  width: 72px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.cart-product-link {
+  color: var(--shop-brown);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.cart-product-link:hover {
+  color: var(--shop-brown-dark);
+  text-decoration: underline;
+}
+
+.cart-amount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.cart-amount-btn {
+  width: 2rem;
+  padding-left: 0;
+  padding-right: 0;
+  line-height: 1.2;
+}
+
+.cart-amount-value {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.cart-total-label {
+  font-weight: 500;
+  border-bottom: none;
+}
+
+.cart-total {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--shop-brown-dark);
+  border-bottom: none;
+}
+
+/* ===== "Added to cart" toast ===== */
+.cart-toast-container {
+  margin-top: 84px; /* just below the 80px header */
+  z-index: 1080;
+}
+
+.cart-toast {
+  background-color: #fff;
+  border: 1px solid #ecd9c6;
+  border-left: 4px solid var(--shop-brown);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cart-toast-check {
+  color: var(--shop-brown);
+  font-weight: 700;
+  margin-right: 0.25rem;
+}
+
+.cart-toast-link {
+  display: inline-block;
+  margin-left: 0.25rem;
+  color: var(--shop-brown-dark);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ===== Slide-out cart panel (offcanvas) ===== */
+.mini-cart {
+  --bs-offcanvas-width: 380px;
+  background-color: var(--shop-cream);
+}
+
+.mini-cart .offcanvas-header {
+  background-color: var(--shop-brown);
+  color: #fff;
+}
+
+.mini-cart .offcanvas-title {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.mini-cart .btn-close {
+  filter: invert(1); /* white × on the terracotta header */
+  opacity: 0.9;
+}
+
+.mini-cart .offcanvas-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-cart-loading,
+.mini-cart-empty {
+  color: var(--shop-muted);
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.mini-cart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mini-cart-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #ecd9c6;
+}
+
+.mini-cart-thumb {
+  width: 56px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  flex-shrink: 0;
+}
+
+.mini-cart-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+.mini-cart-name {
+  color: var(--shop-brown-dark);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.mini-cart-name:hover {
+  text-decoration: underline;
+}
+
+.mini-cart-qty {
+  color: var(--shop-muted);
+  font-size: 0.85rem;
+}
+
+.mini-cart-line-total {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Total + buttons stick to the bottom of the panel */
+.mini-cart-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.mini-cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.mini-cart-total-amount {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--shop-brown-dark);
+}

@@ -1,0 +1,77 @@
+@model ShoppingCartViewModel
+
+@{
+    ViewData["Title"] = "Shopping cart";
+    var items = Model.ShoppingCart.ShoppingCartItems;
+}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-shop">&larr; Continue shopping</a>
+    <h1 class="page-title m-0">Your cart</h1>
+</div>
+
+@if (!items.Any())
+{
+    <div class="card product-card cart-empty text-center p-5">
+        <p class="lead mb-3">Your cart is empty.</p>
+        <p class="mb-4">Have a look at what's fresh today.</p>
+        <div>
+            <a asp-controller="Product" asp-action="List" class="btn btn-primary">Browse products</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card product-card cart-card">
+        <div class="table-responsive">
+            <table class="table cart-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th colspan="2">Product</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-end">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in items)
+                    {
+                        <tr>
+                            <td class="cart-thumb-cell">
+                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="cart-thumb" />
+                            </td>
+                            <td>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.ProductId"
+                                   asp-route-slug="@Slug.From(item.Product.Name)" class="cart-product-link">@item.Product.Name</a>
+                            </td>
+                            <td>
+                                @* − removes one (and the whole line when it reaches 0), + adds one *@
+                                <div class="cart-amount">
+                                    <form method="post" asp-action="RemoveFromShoppingCart">
+                                        <input type="hidden" name="productId" value="@item.Product.ProductId" />
+                                        <button type="submit" class="btn btn-outline-shop btn-sm cart-amount-btn"
+                                                aria-label="Remove one @item.Product.Name">&minus;</button>
+                                    </form>
+                                    <span class="cart-amount-value">@item.Amount</span>
+                                    <form method="post" asp-action="AddToShoppingCart">
+                                        <input type="hidden" name="productId" value="@item.Product.ProductId" />
+                                        <button type="submit" class="btn btn-outline-shop btn-sm cart-amount-btn"
+                                                aria-label="Add one @item.Product.Name">+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="text-end">@item.Product.Price.ToString("c")</td>
+                            <td class="text-end fw-medium">@((item.Product.Price * item.Amount).ToString("c"))</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end cart-total-label">Total</td>
+                        <td class="text-end cart-total">@Model.ShoppingCartTotal.ToString("c")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+}

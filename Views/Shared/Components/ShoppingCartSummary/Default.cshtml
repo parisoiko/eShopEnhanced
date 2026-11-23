@@ -1,0 +1,21 @@
+@model int
+
+@* Model = how many pieces are in the cart *@
+<li class="nav-item">
+    @* data-bs-toggle="offcanvas": with JavaScript, clicking opens the slide-out cart panel (#miniCart in _Layout)
+       instead of following the link. Without JavaScript, the href still goes to the cart page. *@
+    <a class="nav-link nav-cart-link" asp-controller="ShoppingCart" asp-action="Index"
+       data-bs-toggle="offcanvas" data-bs-target="#miniCart" aria-controls="miniCart"
+       aria-label="Shopping cart, @Model @(Model == 1 ? "item" : "items")">
+        @* Simple basket icon (inline SVG, follows the link colour) *@
+        <svg class="nav-cart-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 9h14l-1.5 10.5a1 1 0 0 1-1 .5h-9a1 1 0 0 1-1-.5L5 9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+            <path d="M8.5 9 11 4M15.5 9 13 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+        Cart
+        @if (Model > 0)
+        {
+            <span class="nav-cart-badge">@Model</span>
+        }
+    </a>
+</li>

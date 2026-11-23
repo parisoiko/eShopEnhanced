@@ -1,0 +1,42 @@
+@model ShoppingCartViewModel
+
+@* The contents of the slide-out cart panel. Returned by ShoppingCartController.MiniCart
+   as a fragment (no layout) and inserted into the panel by site.js when it opens. *@
+
+@{
+    var items = Model.ShoppingCart.ShoppingCartItems;
+}
+
+@if (!items.Any())
+{
+    <div class="mini-cart-empty">
+        <p class="mb-3">Your cart is empty.</p>
+        <button type="button" class="btn btn-outline-shop" data-bs-dismiss="offcanvas">Continue shopping</button>
+    </div>
+}
+else
+{
+    <ul class="mini-cart-list">
+        @foreach (var item in items)
+        {
+            <li class="mini-cart-item">
+                <img src="@item.Product.ImageUrl" alt="" class="mini-cart-thumb" />
+                <div class="mini-cart-info">
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.ProductId"
+                       asp-route-slug="@Slug.From(item.Product.Name)" class="mini-cart-name">@item.Product.Name</a>
+                    <span class="mini-cart-qty">@item.Amount &times; @item.Product.Price.ToString("c")</span>
+                </div>
+                <span class="mini-cart-line-total">@((item.Product.Price * item.Amount).ToString("c"))</span>
+            </li>
+        }
+    </ul>
+
+    <div class="mini-cart-footer">
+        <div class="mini-cart-total">
+            <span>Total</span>
+            <span class="mini-cart-total-amount">@Model.ShoppingCartTotal.ToString("c")</span>
+        </div>
+        <a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-primary w-100 mb-2">View full cart</a>
+        <button type="button" class="btn btn-outline-shop w-100" data-bs-dismiss="offcanvas">Continue shopping</button>
+    </div>
+}

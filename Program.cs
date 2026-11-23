@@ -1,4 +1,5 @@
 using eShopEnhanced.Data;
+using eShopEnhanced.Services;
 using eShopEnhanced.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,14 +10,18 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IShoppingCart, ShoppingCart>(sp => ShoppingCart.GetCart(sp));
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<eShopEnhancedDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration["ConnectionStrings:eShopEnhancedDbConnection"]);
 });
-//builder.Services.AddScoped<ILoggerService, LoggerService>();
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+app.UseSession();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
