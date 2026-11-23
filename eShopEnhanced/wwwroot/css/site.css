@@ -837,3 +837,63 @@ footer.footer.shop-footer a {
   margin-right: 0.35rem;
   opacity: 0.8;
 }
+
+/* ===== Account links in the navbar (Views/Shared/_LoginPartial.cshtml) ===== */
+.nav-account {
+  margin-left: 0.75rem;
+}
+
+.nav-account .btn-link {
+  text-decoration: none;
+  border: none;
+}
+
+.nav-account-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Identity pages (Log in, Register, Manage account): links in the shop colours */
+.identity-page a:not(.btn) {
+  color: var(--shop-brown-dark);
+}
+
+/* Round avatar with initials in the navbar (logged-in users) */
+.nav-avatar-toggle {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+}
+
+.nav-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--shop-cream);
+  color: var(--shop-brown-dark);
+  border: 2px solid #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: box-shadow 0.15s ease;
+}
+
+.nav-avatar-toggle:hover .nav-avatar,
+.nav-avatar-toggle:focus-visible .nav-avatar,
+.nav-avatar-toggle.show .nav-avatar {
+  box-shadow: 0 0 0 3px rgba(255, 246, 236, 0.5);
+}
+
+.nav-account-menu {
+  min-width: 200px;
+}
+
+.nav-account-menu-name {
+  font-weight: 500;
+  color: var(--shop-brown-dark);
+}

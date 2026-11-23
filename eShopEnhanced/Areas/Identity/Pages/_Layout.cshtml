@@ -1,0 +1,20 @@
+@*
+    Identity's built-in pages (Log in, Register, Manage account...) live inside the Identity package and
+    use the layout at THIS path: /Areas/Identity/Pages/_Layout.cshtml. A file at the same path in our
+    project takes priority over the package's own (plain, unbranded) one.
+
+    This file just passes everything on to the shop's real layout, so the Identity pages get the
+    Bakery París header, navbar and footer like every other page.
+*@
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="identity-page">
+    @RenderBody()
+</div>
+
+@* Identity pages add their own scripts (form validation); pass them through to our layout *@
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}

@@ -1,0 +1,53 @@
+@using Microsoft.AspNetCore.Identity
+@using eShopEnhanced.Services
+@inject SignInManager<ApplicationUser> SignInManager
+
+@* Navbar account area:
+     logged out ->  Log in · Register
+     logged in  ->  a round avatar with the initials ("MP"); clicking it opens a small menu.
+   First and last name come from the login cookie ("claims", see AppClaimsPrincipalFactory),
+   so no database query is needed on every page. *@
+
+@if (SignInManager.IsSignedIn(User))
+{
+    string firstName = User.FindFirst(AppClaimsPrincipalFactory.FirstNameClaim)?.Value ?? string.Empty;
+    string lastName = User.FindFirst(AppClaimsPrincipalFactory.LastNameClaim)?.Value ?? string.Empty;
+    string fullName = $"{firstName} {lastName}".Trim();
+    string initials = $"{firstName.FirstOrDefault()}{lastName.FirstOrDefault()}".ToUpperInvariant().Trim('\0');
+    if (string.IsNullOrEmpty(initials))
+    {
+        initials = "?";   // safety net for an account without a name
+    }
+
+    <ul class="navbar-nav nav-account">
+        <li class="nav-item dropdown">
+            <button type="button" class="nav-link nav-avatar-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                    aria-label="Account menu for @fullName">
+                <span class="nav-avatar" aria-hidden="true">@initials</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shop-dropdown nav-account-menu">
+                <li><span class="dropdown-item-text nav-account-menu-name">@fullName</span></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">My account</a></li>
+                <li>
+                    @* Logging out changes something, so it's a POST form (with anti-forgery token), not a link *@
+                    <form method="post" asp-area="Identity" asp-page="/Account/Logout"
+                          asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="dropdown-item">Log out</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="navbar-nav nav-account">
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Log in</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+    </ul>
+}

@@ -1,0 +1,104 @@
+@page
+@model eShopEnhanced.Areas.Identity.Pages.Account.RegisterModel
+
+@{
+    ViewData["Title"] = "Create your account";
+}
+
+@* A Razor Page: "@page" at the top makes this file a page of its own (URL: /Identity/Account/Register).
+   asp-for="Input.FirstName" points at the InputModel in Register.cshtml.cs; the same form tag helpers
+   as the checkout form. *@
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <h1 class="page-title m-0">Create your account</h1>
+</div>
+
+<div class="card product-card checkout-card">
+    <form method="post" asp-route-returnUrl="@Model.ReturnUrl" class="p-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <h2 class="checkout-section-title">Account</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <label asp-for="Input.Email" class="form-label"></label>
+                <input asp-for="Input.Email" type="email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Input.Password" class="form-label"></label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <p class="form-text m-0">At least 6 characters, with an uppercase letter, a lowercase letter, a digit and a symbol (like ! or ?).</p>
+            </div>
+        </div>
+
+        <h2 class="checkout-section-title">Your details</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label asp-for="Input.FirstName" class="form-label"></label>
+                <input asp-for="Input.FirstName" class="form-control" autocomplete="given-name" />
+                <span asp-validation-for="Input.FirstName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Input.LastName" class="form-label"></label>
+                <input asp-for="Input.LastName" class="form-control" autocomplete="family-name" />
+                <span asp-validation-for="Input.LastName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Input.PhoneNumber" class="form-label"></label>
+                <input asp-for="Input.PhoneNumber" type="tel" class="form-control" autocomplete="tel" />
+                <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <h2 class="checkout-section-title">Delivery address</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <label asp-for="Input.AddressLine1" class="form-label"></label>
+                <input asp-for="Input.AddressLine1" class="form-control" autocomplete="address-line1" />
+                <span asp-validation-for="Input.AddressLine1" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Input.AddressLine2" class="form-label"></label>
+                <input asp-for="Input.AddressLine2" class="form-control" autocomplete="address-line2" placeholder="Apartment, floor (optional)" />
+                <span asp-validation-for="Input.AddressLine2" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Input.ZipCode" class="form-label"></label>
+                <input asp-for="Input.ZipCode" class="form-control" autocomplete="postal-code" />
+                <span asp-validation-for="Input.ZipCode" class="text-danger small"></span>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="Input.City" class="form-label"></label>
+                <input asp-for="Input.City" class="form-control" autocomplete="address-level2" />
+                <span asp-validation-for="Input.City" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Input.State" class="form-label"></label>
+                <input asp-for="Input.State" class="form-control" autocomplete="address-level1" placeholder="Optional" />
+                <span asp-validation-for="Input.State" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Input.Country" class="form-label"></label>
+                <input asp-for="Input.Country" class="form-control" autocomplete="country-name" />
+                <span asp-validation-for="Input.Country" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <button type="submit" class="btn btn-primary btn-lg">Create account</button>
+            <span>Already have an account? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Log in</a></span>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

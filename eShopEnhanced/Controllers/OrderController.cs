@@ -1,26 +1,54 @@
 using eShopEnhanced.Models;
 using eShopEnhanced.Repositories;
 using eShopEnhanced.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eShopEnhanced.Controllers
 {
+    // [Authorize] on the controller = every action needs a logged-in user.
+    // A visitor who isn't logged in is sent to /Identity/Account/Login?ReturnUrl=/Order/Checkout
+    // and comes straight back here after logging in. The cart is kept (it's tied to the session).
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IShoppingCart _shoppingCart;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public OrderController(IOrderRepository orderRepository, IShoppingCart shoppingCart)
+        public OrderController(IOrderRepository orderRepository, IShoppingCart shoppingCart, UserManager<ApplicationUser> userManager)
         {
             _orderRepository = orderRepository;
             _shoppingCart = shoppingCart;
+            _userManager = userManager;
         }
 
-        // GET /Order/Checkout -> the empty checkout form
+        // GET /Order/Checkout -> the checkout form, already filled in from the customer's account
+        // (they can still change anything, e.g. to send the order to another address)
         [HttpGet]
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
-            return View();
+            ApplicationUser? user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return View();
+            }
+
+            var prefilled = new Order
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
+                AddressLine1 = user.AddressLine1,
+                AddressLine2 = user.AddressLine2,
+                ZipCode = user.ZipCode,
+                City = user.City,
+                State = user.State,
+                Country = user.Country
+            };
+            return View(prefilled);
         }
 
         // POST /Order/Checkout -> the filled-in form arrives here.
