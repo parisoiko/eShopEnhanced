@@ -565,3 +565,36 @@ footer.footer.shop-footer a {
   font-weight: 700;
   color: var(--shop-brown-dark);
 }
+
+/* ===== Checkout form ===== */
+.checkout-card:hover {
+  transform: none;
+}
+
+.checkout-section-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--shop-brown);
+  margin-bottom: 0.75rem;
+}
+
+.checkout-card .form-control:focus {
+  border-color: var(--shop-brown);
+  box-shadow: 0 0 0 0.2rem rgba(193, 122, 85, 0.25);
+}
+
+.checkout-complete-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background-color: var(--shop-brown);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 64px;
+}
+
+/* Red border on fields with an error (ASP.NET Core adds this class to invalid inputs) */
+.checkout-card .input-validation-error {
+  border-color: #dc3545;
+}

@@ -36,7 +36,8 @@ else
             <span>Total</span>
             <span class="mini-cart-total-amount">@Model.ShoppingCartTotal.ToString("c")</span>
         </div>
-        <a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-primary w-100 mb-2">View full cart</a>
+        <a asp-controller="Order" asp-action="Checkout" class="btn btn-primary w-100 mb-2">Check out</a>
+        <a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-outline-shop w-100 mb-2">View full cart</a>
         <button type="button" class="btn btn-outline-shop w-100" data-bs-dismiss="offcanvas">Continue shopping</button>
     </div>
 }

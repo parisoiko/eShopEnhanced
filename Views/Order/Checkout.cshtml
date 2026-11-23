@@ -1,0 +1,92 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a asp-controller="ShoppingCart" asp-action="Index" class="btn btn-outline-shop">&larr; Back to cart</a>
+    <h1 class="page-title m-0">Checkout</h1>
+</div>
+
+@*
+    Form tag helpers:
+      <form asp-action="Checkout">      -> action="/Order/Checkout" method="post" + a hidden anti-forgery token
+      <label asp-for="FirstName">       -> <label for="FirstName">First name</label>   (text from [Display])
+      <input asp-for="FirstName">       -> <input id="FirstName" name="FirstName" type="text" value="...">
+      <span asp-validation-for="...">   -> where the error message for that field will appear
+      <div asp-validation-summary>      -> a list of all errors (ModelOnly = errors not tied to one field)
+    The name="FirstName" attributes are what model binding uses (next lesson) to fill an Order object.
+*@
+<div class="card product-card checkout-card">
+    <form asp-action="Checkout" method="post" class="p-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <h2 class="checkout-section-title">Your details</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label asp-for="FirstName" class="form-label"></label>
+                <input asp-for="FirstName" class="form-control" autocomplete="given-name" />
+                <span asp-validation-for="FirstName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LastName" class="form-label"></label>
+                <input asp-for="LastName" class="form-control" autocomplete="family-name" />
+                <span asp-validation-for="LastName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" type="email" class="form-control" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" type="tel" class="form-control" autocomplete="tel" />
+                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <h2 class="checkout-section-title">Delivery address</h2>
+        <div class="row g-3 mb-4">
+            <div class="col-12">
+                <label asp-for="AddressLine1" class="form-label"></label>
+                <input asp-for="AddressLine1" class="form-control" autocomplete="address-line1" />
+                <span asp-validation-for="AddressLine1" class="text-danger small"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="AddressLine2" class="form-label"></label>
+                <input asp-for="AddressLine2" class="form-control" autocomplete="address-line2" placeholder="Apartment, floor (optional)" />
+                <span asp-validation-for="AddressLine2" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="ZipCode" class="form-label"></label>
+                <input asp-for="ZipCode" class="form-control" autocomplete="postal-code" />
+                <span asp-validation-for="ZipCode" class="text-danger small"></span>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="City" class="form-label"></label>
+                <input asp-for="City" class="form-control" autocomplete="address-level2" />
+                <span asp-validation-for="City" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="State" class="form-label"></label>
+                <input asp-for="State" class="form-control" autocomplete="address-level1" placeholder="Optional" />
+                <span asp-validation-for="State" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Country" class="form-label"></label>
+                <input asp-for="Country" class="form-control" autocomplete="country-name" />
+                <span asp-validation-for="Country" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">Place order</button>
+    </form>
+</div>
+
+@* Client-side validation: jQuery Validation + Microsoft's "unobtrusive" adapter read the
+   data-val-* attributes on the inputs and check them in the browser before the form is sent.
+   _Layout renders this section after jQuery has loaded. *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -14,6 +14,8 @@ namespace eShopEnhanced.Data
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +24,14 @@ namespace eShopEnhanced.Data
             // decimal(18,2): up to 18 digits, 2 after the decimal point (e.g. 15.95)
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Order>()
+                .Property(o => o.OrderTotal)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<OrderDetail>()
+                .Property(d => d.Price)
                 .HasPrecision(18, 2);
         }
     }

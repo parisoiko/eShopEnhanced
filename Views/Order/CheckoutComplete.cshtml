@@ -1,0 +1,13 @@
+@{
+    ViewData["Title"] = "Thank you";
+}
+
+<div class="card product-card checkout-card text-center p-5">
+    <div class="checkout-complete-icon" aria-hidden="true">&#10003;</div>
+    <h1 class="page-title mb-3">Order placed</h1>
+    @* Set in OrderController.CheckoutComplete *@
+    <p class="lead mb-4">@ViewBag.CheckoutCompleteMessage</p>
+    <div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to the shop</a>
+    </div>
+</div>
